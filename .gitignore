@@ -1,0 +1,14 @@
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+.idea/
+.idea/Movie_Project.iml
+.idea/inspectionProfiles/profiles_settings.xml
+.idea/misc.xml
+.idea/vcs.xml
+.idea/workspace.xml
+.env/
+.idea
