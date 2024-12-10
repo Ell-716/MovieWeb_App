@@ -9,6 +9,7 @@ user_movies = db.Table(
     db.Column('movie_id', db.Integer, db.ForeignKey('movies.id'), primary_key=True)
 )
 
+
 class User(db.Model):
     """
     Represents a user in the application.
