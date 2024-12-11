@@ -2,29 +2,18 @@ from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 
-# Many-to-many join table
-user_movies = db.Table(
-    'user_movies',
-    db.Column('user_id', db.Integer, db.ForeignKey('users.id'), primary_key=True),
-    db.Column('movie_id', db.Integer, db.ForeignKey('movies.id'), primary_key=True)
-)
-
 
 class User(db.Model):
     """
     Represents a user in the application.
-
-    Attributes:
-        id (int): The unique identifier for the user.
-        name (str): The name of the user.
-        movies (list[Movie]): The list of movies associated with the user.
     """
     __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String, nullable=False)
 
-    movies = db.relationship('Movie', secondary=user_movies, back_populates='users')
+    # Relationship to UserMovies
+    user_movies = db.relationship('UserMovies', back_populates='user', cascade="all, delete")
 
     def __repr__(self):
         return f"User(id = {self.id}, name = {self.name})"
@@ -36,15 +25,6 @@ class User(db.Model):
 class Movie(db.Model):
     """
     Represents a movie in the application.
-
-    Attributes:
-        id (int): The unique identifier for the movie.
-        title (str): The title of the movie.
-        release_year (int): The year the movie was released (optional).
-        poster (str): A URL or path to the movie's poster image (optional).
-        director (str): The director of the movie (optional).
-        rating (float): The rating of the movie (optional).
-        users (list[User]): The list of users associated with the movie.
     """
     __tablename__ = 'movies'
 
@@ -53,9 +33,10 @@ class Movie(db.Model):
     release_year = db.Column(db.Integer, nullable=True)
     poster = db.Column(db.String, nullable=True)
     director = db.Column(db.String, nullable=True)
-    rating = db.Column(db.Float, nullable=True)
+    rating = db.Column(db.Float, nullable=False)
 
-    users = db.relationship('User', secondary=user_movies, back_populates='movies')
+    # Relationship to UserMovies
+    user_movies = db.relationship('UserMovies', back_populates='movie', cascade="all, delete")
 
     def __repr__(self):
         return (f"Movie(id = {self.id}, title = {self.title}, release_year = {self.release_year}, "
@@ -63,3 +44,26 @@ class Movie(db.Model):
 
     def __str__(self):
         return f"{self.id}. {self.title} ({self.release_year})"
+
+
+class UserMovies(db.Model):
+    """
+    Represents the many-to-many relationship between users and movies.
+    """
+    __tablename__ = 'user_movies'
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    movie_id = db.Column(db.Integer, db.ForeignKey('movies.id'), nullable=False)
+    custom_title = db.Column(db.String(100), nullable=False)
+    custom_rating = db.Column(db.Float, nullable=False)
+    custom_notes = db.Column(db.String, nullable=True)
+
+    # Relationships
+    user = db.relationship('User', back_populates='user_movies')
+    movie = db.relationship('Movie', back_populates='user_movies')
+
+    def __repr__(self):
+        return (f"UserMovies(id = {self.id}, user_id = {self.user_id}, movie_id = {self.movie_id}, "
+                f"custom_title = {self.custom_title}, custom_rating = {self.custom_rating}, "
+                f"custom_notes = {self.custom_notes})")

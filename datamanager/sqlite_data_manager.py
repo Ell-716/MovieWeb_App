@@ -1,4 +1,4 @@
-from datamanager.data_models import db, User, Movie, user_movies
+from datamanager.data_models import db, User, Movie, UserMovies
 from data_manager import DataManagerInterface
 from sqlalchemy.exc import SQLAlchemyError
 
@@ -43,11 +43,11 @@ class SQLiteDataManager(DataManagerInterface):
             if not user:
                 raise ValueError(f"User with ID {user_id} does not exist.")
 
-            # Query the movies linked to this user via the user_movies table
+            # Query the movies linked to this user via the UserMovies table
             movies = (
                 self.db.session.query(Movie)
-                .join(user_movies, user_movies.c.movie_id == Movie.id)
-                .filter(user_movies.c.user_id == user_id)
+                .join(UserMovies, UserMovies.movie_id == Movie.id)
+                .filter(UserMovies.user_id == user_id)
                 .all()
             )
 
