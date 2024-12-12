@@ -76,7 +76,7 @@ class SQLiteDataManager(DataManagerInterface):
             return user
         except SQLAlchemyError as e:
             print(f"Error fetching user with ID {user_id}: {e}")
-            raise
+            raise  # Re-raise the original exception
 
     def add_user(self, user_name):
         """
@@ -91,6 +91,7 @@ class SQLiteDataManager(DataManagerInterface):
             self.db.session.add(new_user)
             self.db.session.commit()
             return f"User '{user_name}' was added successfully!"
+
         except SQLAlchemyError as e:
             print(f"Error adding user '{user_name}': {e}")
             self.db.session.rollback()
@@ -113,10 +114,8 @@ class SQLiteDataManager(DataManagerInterface):
             # Delete associated entries in UserMovies
             self.db.session.query(UserMovies).filter(UserMovies.user_id == user_id).delete()
 
-            # Delete the user
+            # Delete the user and commit the changes
             self.db.session.delete(user_to_delete)
-
-            # Commit the changes to the database
             self.db.session.commit()
             return f"User with ID {user_id} and all associated data were deleted successfully!"
 
@@ -140,15 +139,112 @@ class SQLiteDataManager(DataManagerInterface):
             if not user_to_update:
                 return f"User with ID {user_id} does not exist."
 
-            # Update the user's name
+            # Update the user's name and commit the changes
             user_to_update.name = user_name
-
-            # Commit the changes to the database
             self.db.session.commit()
-
             return f"User '{user_name}' was updated successfully!"
+
         except SQLAlchemyError as e:
             print(f"Error updating user with ID {user_id}: {e}")
             self.db.session.rollback()
             raise ValueError(f"Could not update user with ID {user_id}. Please try again.")
 
+    def get_movie(self, movie_id):
+        """
+        Retrieve a specific movie by its ID.
+        Args:
+            movie_id (int): The ID of the movie to retrieve.
+        Returns:
+            Movie: The movie object if found.
+        """
+        try:
+            movie = self.db.session.query(Movie).filter(Movie.id == movie_id).one_or_none()
+
+            if not movie:
+                raise ValueError(f"No movie found with ID {movie_id}")
+            return movie
+
+        except SQLAlchemyError as e:
+            print(f"Error fetching movie with ID {movie_id}: {e}")
+            raise  # Re-raise the original exception
+
+    def add_movie(self, title, release_year=None, director=None, rating=None, poster=None):
+        """
+        Add a new movie to the database.
+        Args:
+            title (str): The title of the movie.
+            release_year (int, optional): The release year of the movie. Defaults to None.
+            director (str, optional): The director of the movie. Defaults to None.
+            rating (float, optional): The rating of the movie. Defaults to None.
+            poster (str, optional): The poster image URL for the movie. Defaults to None.
+        Returns:
+            str: A success message if the movie is added successfully.
+        """
+        try:
+            new_movie = Movie(title=title, release_year=release_year,
+                              director=director, rating=rating, poster=poster)
+            self.db.session.add(new_movie)
+            self.db.session.commit()
+            return f"Movie '{title}' was added successfully!"
+
+        except SQLAlchemyError as e:
+            print(f"Error adding movie '{title}': {e}")
+            self.db.session.rollback()
+            raise ValueError(f"Could not add movie '{title}'. Please try again.")
+
+    def delete_movie(self, movie_id):
+        """
+        Delete a movie from the database.
+        Args:
+            movie_id (int): The ID of the movie to delete.
+        Returns:
+            str: A success message if the movie is deleted.
+        """
+        try:
+            # Check if the movie exists
+            movie_to_delete = self.get_movie(movie_id)
+            if not movie_to_delete:
+                return f"Movie with ID {movie_id} does not exist."
+
+            # Delete the movie and commit the changes
+            self.db.session.delete(movie_to_delete)
+            self.db.session.commit()
+            return f"Movie '{movie_to_delete.title}' was deleted successfully!"
+
+        except SQLAlchemyError as e:
+            print(f"Error deleting movie with ID {movie_id}: {e}")
+            self.db.session.rollback()
+            raise ValueError(f"Could not delete movie with ID {movie_id}. Please try again.")
+
+    def update_movie(self, movie_id, title=None, director=None, release_year=None, rating=None):
+        """
+        Update the details of an existing movie in the database.
+        Args:
+            movie_id (int): The ID of the movie to update.
+            title (str, optional): The new title of the movie. Defaults to None.
+            director (str, optional): The new director of the movie. Defaults to None.
+            release_year (int, optional): The new release year of the movie. Defaults to None.
+            rating (float, optional): The new rating of the movie. Defaults to None.
+        Returns:
+            str: A success message if the movie is updated successfully.
+        """
+        try:
+            # Check if the movie exists
+            movie_to_update = self.get_movie(movie_id)
+            if not movie_to_update:
+                return f"Movie with ID {movie_id} does not exist."
+
+            # Update the movie details
+            movie_to_update.title = title or movie_to_update.title
+            movie_to_update.director = director or movie_to_update.director
+            movie_to_update.release_year = release_year or movie_to_update.release_year
+            movie_to_update.rating = rating or movie_to_update.rating
+
+            # Commit the changes
+            self.db.session.commit()
+            return f"Movie '{movie_to_update.title}' was updated successfully!"
+
+        except SQLAlchemyError as e:
+            print(f"Error updating movie with ID {movie_id}: {e}")
+            self.db.session.rollback()
+            raise ValueError(f"Could not update movie with ID {movie_id}. Please try again.")
