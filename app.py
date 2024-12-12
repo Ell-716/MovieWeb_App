@@ -10,14 +10,14 @@ app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{base_dir}/data/movies.sqlit
 
 data = SQLiteDataManager(app)
 
-# run this one once
-with app.app_context():
-    data.db.create_all()
+# Run this one once
+# with app.app_context():
+    # data.db.create_all()
 
 
 @app.route('/', methods=['GET'])
 def home():
-    pass
+    return render_template('home.html')
 
 
 @app.route('/users', methods=['GET'])
