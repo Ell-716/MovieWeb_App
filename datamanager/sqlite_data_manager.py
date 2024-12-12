@@ -95,3 +95,60 @@ class SQLiteDataManager(DataManagerInterface):
             print(f"Error adding user '{user_name}': {e}")
             self.db.session.rollback()
             raise ValueError(f"Could not add user '{user_name}'. Please try again.")
+
+    def delete_user(self, user_id):
+        """
+        Delete a user and their associated entries from the database.
+        Args:
+            user_id (int): The ID of the user to delete.
+        Returns:
+            str: A success message if the user is deleted.
+        """
+        try:
+            # Check if the user exists
+            user_to_delete = self.get_user(user_id)
+            if not user_to_delete:
+                return f"User with ID {user_id} does not exist."
+
+            # Delete associated entries in UserMovies
+            self.db.session.query(UserMovies).filter(UserMovies.user_id == user_id).delete()
+
+            # Delete the user
+            self.db.session.delete(user_to_delete)
+
+            # Commit the changes to the database
+            self.db.session.commit()
+            return f"User with ID {user_id} and all associated data were deleted successfully!"
+
+        except SQLAlchemyError as e:
+            print(f"Error deleting user with ID {user_id}: {e}")
+            self.db.session.rollback()
+            raise ValueError(f"Could not delete user with ID {user_id}. Please try again.")
+
+    def update_user(self, user_id, user_name):
+        """
+        Update the name of an existing user in the database.
+        Args:
+            user_id (int): The ID of the user to update.
+            user_name (str): The new name for the user.
+        Returns:
+            str: A success message if the user is updated.
+        """
+        try:
+            # Check if the user exists
+            user_to_update = self.get_user(user_id)
+            if not user_to_update:
+                return f"User with ID {user_id} does not exist."
+
+            # Update the user's name
+            user_to_update.name = user_name
+
+            # Commit the changes to the database
+            self.db.session.commit()
+
+            return f"User '{user_name}' was updated successfully!"
+        except SQLAlchemyError as e:
+            print(f"Error updating user with ID {user_id}: {e}")
+            self.db.session.rollback()
+            raise ValueError(f"Could not update user with ID {user_id}. Please try again.")
+
