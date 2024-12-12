@@ -248,3 +248,15 @@ class SQLiteDataManager(DataManagerInterface):
             print(f"Error updating movie with ID {movie_id}: {e}")
             self.db.session.rollback()
             raise ValueError(f"Could not update movie with ID {movie_id}. Please try again.")
+
+    def get_all_movies(self):
+        """
+        Retrieve all movies from the database.
+        Returns:
+        List[User]: A list of all movie objects.
+        """
+        try:
+            return self.db.session.query(Movie).all()
+        except SQLAlchemyError as e:
+            print(f"Error fetching all movies: {e}")
+            return []
