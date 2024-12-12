@@ -1,6 +1,7 @@
-from datamanager.data_models import db, User, Movie, UserMovies
-from data_manager import DataManagerInterface
+from datamanager.data_models import User, Movie, UserMovies
+from datamanager.data_manager import DataManagerInterface
 from sqlalchemy.exc import SQLAlchemyError
+from flask_sqlalchemy import SQLAlchemy
 
 
 class SQLiteDataManager(DataManagerInterface):
@@ -14,8 +15,7 @@ class SQLiteDataManager(DataManagerInterface):
         Args:
             app: The Flask application instance.
         """
-        db.init_app(app)
-        self.db = db
+        self.db = SQLAlchemy(app)
 
     def get_all_users(self):
         """

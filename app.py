@@ -1,5 +1,5 @@
 import os
-from flask import Flask
+from flask import Flask, request, render_template
 from datamanager.sqlite_data_manager import SQLiteDataManager
 
 
@@ -8,25 +8,26 @@ app = Flask(__name__)
 base_dir = os.path.abspath(os.path.dirname(__file__))
 app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{base_dir}/data/movies.sqlite"
 
-data_manager = SQLiteDataManager()
-data_manager.db.init_app(app)
+data = SQLiteDataManager(app)
 
-# I will run this one once
+# run this one once
 with app.app_context():
-    data_manager.db.create_all()
+    data.db.create_all()
 
 
-@app.route('/', method=['GET'])
+@app.route('/', methods=['GET'])
 def home():
     pass
 
 
-@app.route('/users', method=['GET'])
-def users_list():
-    pass
+@app.route('/users', methods=['GET'])
+def list_users():
+    users = data.get_all_users()
+    message = request.args.get('message', '')
+    return render_template('users.html', users=users, message=message)
 
 
-@app.route('/users/<user_id>', method=['GET'])
+@app.route('/users/<user_id>', methods=['GET'])
 def user_movies(user_id):
     pass
 
@@ -46,7 +47,7 @@ def update_movie(user_id, movie_id):
     pass
 
 
-@app.route('/users/<user_id>/delete_movie/<movie_id>', method=['GET'])
+@app.route('/users/<user_id>/delete_movie/<movie_id>', methods=['GET'])
 def delete_movie(user_id, movie_id):
     pass
 

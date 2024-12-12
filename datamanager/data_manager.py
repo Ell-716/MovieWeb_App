@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from data_models import User, Movie
+from datamanager.data_models import User, Movie
 
 
 class DataManagerInterface(ABC):

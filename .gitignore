@@ -12,3 +12,5 @@ env.bak/
 .idea/workspace.xml
 .env/
 .idea
+__pycache__/
+*.pyc
