@@ -186,7 +186,18 @@ def update_movie(user_id, movie_id):
 
 @app.route('/users/<user_id>/delete_movie/<movie_id>', methods=['GET'])
 def delete_movie(user_id, movie_id):
-    pass
+    try:
+        movie_to_delete = data.delete_movie(user_id, movie_id)
+        if not movie_to_delete:
+            warning_message = f"Movie with ID {movie_id} not found."
+            return redirect(f'/users/{user_id}?message={warning_message}')
+
+        success_message = f"Movie '{movie_to_delete}' deleted successfully!"
+        return redirect(f'/users/{user_id}?message={success_message}')
+
+    except Exception as e:
+        warning_message = f"An error occurred: {e}"
+        return redirect(f'/users/{user_id}?message={warning_message}')
 
 
 @app.route('/users/<user_id>/update_user', methods=['GET', 'POST'])
