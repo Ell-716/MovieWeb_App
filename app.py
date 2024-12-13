@@ -24,7 +24,7 @@ def home():
 @app.route('/users', methods=['GET'])
 def list_users():
     users = data.get_all_users()
-    message = request.args.get('message', '')
+    message = request.args.get('message')
     return render_template('users.html', users=users, message=message)
 
 
@@ -52,7 +52,7 @@ def user_movies(user_id):
         print(f"Unexpected error while fetching movies: {e}")
         movies = []
 
-    message = request.args.get('message', '')
+    message = request.args.get('message')
     return render_template('user_movies.html', user=user_name, movies=movies, message=message)
 
 
@@ -62,7 +62,7 @@ def add_user():
         return render_template("add_user.html")
 
     if request.method == "POST":
-        name = request.form.get('name', '').strip()
+        name = request.form.get('name').strip()
 
         # Check if the name is empty
         if not name:
@@ -89,9 +89,39 @@ def add_user():
         return render_template("add_user.html", success_message=success_message)
 
 
-@app.route('/users/<user_id>/add_movie', methods=['GET', 'POST'])
+@app.route('/users/<int:user_id>/add_movie', methods=['GET', 'POST'])
 def add_movie(user_id):
-    pass
+    try:
+        user_name = data.get_user(user_id)
+    except sqlalchemy.exc.NoResultFound:
+        return redirect('/404')
+
+    if request.method == "GET":
+        return render_template('add_movie.html', user=user_name)
+
+    if request.method == "POST":
+        title = request.form.get('title', '').strip()
+        year = request.form.get('year', '').strip()
+
+        # Validate title
+        if not title:
+            warning_message = "Title is required."
+            return render_template('add_movie.html', user=user_name, warning_message=warning_message)
+
+        # Validate year
+        if not year.isdigit() or not (1800 <= int(year) <= 2024):
+            warning_message = "Please enter a valid year (1800–2024)."
+            return render_template('add_movie.html', user=user_name, warning_message=warning_message)
+
+        try:
+            data.add_movie(user_id, title, year)
+        except Exception as e:
+            print(f"Error adding movie: {e}")
+            error_message = "An error occurred while adding the movie. Please try again."
+            return render_template('add_movie.html', user=user_name, warning_message=error_message)
+
+        success_message = f"Movie '{title}' ({year}) added successfully!"
+        return render_template('add_movie.html', user=user_name, success_message=success_message)
 
 
 @app.route('/users/<user_id>/update_movie/<movie_id>', methods=['GET', 'POST'])
