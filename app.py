@@ -1,5 +1,6 @@
 import os
-from flask import Flask, request, render_template
+import sqlalchemy
+from flask import Flask, request, render_template, redirect
 from datamanager.sqlite_data_manager import SQLiteDataManager
 
 
@@ -29,7 +30,31 @@ def list_users():
 
 @app.route('/users/<user_id>', methods=['GET'])
 def user_movies(user_id):
-    pass
+    try:
+        user_name = data.get_user(user_id)
+        if not user_name:
+            return redirect('/404')  # Handle case where user is not found
+    except sqlalchemy.exc.NoResultFound:
+        return redirect('/404')  # Redirect to a 404 page if no user is found
+    except sqlalchemy.exc.SQLAlchemyError as e:
+        print(f"Database error: {e}")  # Log SQLAlchemy-related errors for debugging
+        return redirect('/error')  # Redirect to a generic error page
+    except Exception as e:
+        print(f"Unexpected error: {e}")  # Log unexpected errors
+        return redirect('/error')
+
+    try:
+        movies = data.get_user_movies(user_id)
+    except sqlalchemy.exc.SQLAlchemyError as e:
+        print(f"Error fetching movies for user {user_id}: {e}")
+        movies = []  # Default to an empty list of movies on error
+    except Exception as e:
+        print(f"Unexpected error while fetching movies: {e}")
+        movies = []
+
+    message = request.args.get('message', '')
+    return render_template('user_movies.html', user=user_name, movies=movies, message=message)
+
 
 
 @app.route('/add_user', methods=['GET', 'POST'])
@@ -60,6 +85,16 @@ def update_user(user_id):
 @app.route('/users/<user_id>/delete_user', methods=['GET'])
 def delete_user(user_id):
     pass
+
+
+@app.route('/404')
+def page_not_found():
+    return render_template('404.html'), 404
+
+
+@app.route('/error')
+def error_page():
+    return render_template('error.html'), 500
 
 
 if __name__ == '__main__':

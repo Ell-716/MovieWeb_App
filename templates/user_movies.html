@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>{{ user.name }}'s Movies</title>
+</head>
+<body>
+    <h1>{{ user.name }}'s Movies</h1>
+    <nav>
+        <a href="/">Home</a>
+        <a href="/users">Users</a>
+    </nav>
+
+    {% if message %}
+        <p style="color: green;">{{ message }}</p>
+    {% endif %}
+
+    <main>
+        {% if movies %}
+            <ul>
+                {% for movie in movies %}
+                    <li>
+                        <strong>{{ movie.title }}</strong> ({{ movie.release_year }}) -
+                        Rating: {{ movie.rating }}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No movies added for {{ user.name }} yet.</p>
+        {% endif %}
+    </main>
+</body>
+</html>
