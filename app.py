@@ -56,10 +56,37 @@ def user_movies(user_id):
     return render_template('user_movies.html', user=user_name, movies=movies, message=message)
 
 
-
 @app.route('/add_user', methods=['GET', 'POST'])
 def add_user():
-    pass
+    if request.method == "GET":
+        return render_template("add_user.html")
+
+    if request.method == "POST":
+        name = request.form.get('name', '').strip()
+
+        # Check if the name is empty
+        if not name:
+            warning_message = "Name is required."
+            return render_template("add_user.html", warning_message=warning_message)
+
+        # Ensure the name is not too short or too long
+        if len(name) < 2:
+            warning_message = "Name must be at least 2 characters long."
+            return render_template("add_user.html", warning_message=warning_message)
+
+        if len(name) > 50:
+            warning_message = "Name cannot exceed 50 characters."
+            return render_template("add_user.html", warning_message=warning_message)
+
+        try:
+            data.add_user(name)
+        except Exception as e:
+            print(f"Error adding user: {e}")
+            error_message = "An error occurred while adding the user. Please try again."
+            return render_template("add_user.html", warning_message=error_message)
+
+        success_message = f"User '{name}' added successfully!"
+        return render_template("add_user.html", success_message=success_message)
 
 
 @app.route('/users/<user_id>/add_movie', methods=['GET', 'POST'])

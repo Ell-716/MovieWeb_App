@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Add User</title>
+  </head>
+  <body>
+    <h1>Add User</h1>
+    <nav>
+        <a href="/"><button>Home</button></a>
+        <a href="/users"><button>Users</button></a>
+    </nav>
+
+  <!-- Success message -->
+  {% if success_message %}
+    <p class="alert alert-success">{{ success_message }}</p>
+  {% endif %}
+
+  <!-- Warning message -->
+  {% if warning_message %}
+    <p class="alert alert-warning">{{ warning_message }}</p>
+  {% endif %}
+
+  <!-- Form for adding an user -->
+
+  <form action="/add_user" method="POST" class="styled-form">
+    <label for="name">User Name:</label>
+    <input type="text" id="name" name="name" required><br><br>
+
+    <input type="submit" value="Add User">
+  </form>
+
+
+  </body>
+</html>
