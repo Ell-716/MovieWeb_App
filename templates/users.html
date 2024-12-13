@@ -20,8 +20,18 @@
     <ul>
         {% for user in users %}
         <li>
+            <!-- Link to the user's movie list -->
             <a href="{{ url_for('user_movies', user_id=user.id) }}">{{ user.name }}</a>
-            <a href="{{ url_for('add_movie', user_id=user.id) }}"><button>Add Movie for {{ user.name }}</button></a>
+
+            <!-- Button to add a movie for the user -->
+            <a href="{{ url_for('add_movie', user_id=user.id) }}">
+                <button>Add Movie for {{ user.name }}</button>
+            </a>
+
+            <!-- Button to update a movie in the user's collection -->
+            <a href="{{ url_for('update_movie', user_id=user.id, movie_id=1) }}"> <!-- Placeholder movie_id -->
+                <button>Update Movie for {{ user.name }}</button>
+            </a>
         </li>
         {% endfor %}
     </ul>

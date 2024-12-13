@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Update Movie</title>
+</head>
+<body>
+    <h1>Update Movie</h1>
+    <nav>
+        <a href="/">Home</a>
+        <a href="/users">Users</a>
+    </nav>
+
+    <!-- Success message -->
+    {% if success_message %}
+        <p class="alert alert-success">{{ success_message }}</p>
+    {% endif %}
+
+    <!-- Warning message -->
+    {% if warning_message %}
+        <p class="alert alert-warning">{{ warning_message }}</p>
+    {% endif %}
+
+    <!-- Form for updating a movie -->
+    <form action="" method="POST" class="styled-form">
+        <label for="title">Title:</label>
+        <input
+            type="text"
+            id="title"
+            name="title"
+            value="{{ movie.title }}"
+            placeholder="Enter movie title"
+            required
+        ><br><br>
+
+        <label for="rating">Rating:</label>
+        <input
+            type="text"
+            id="rating"
+            name="rating"
+            value="{{ movie.rating }}"
+            placeholder="Enter movie rating"
+            required
+        ><br><br>
+
+        <label for="notes">Notes (optional):</label>
+        <textarea
+            id="notes"
+            name="notes"
+            placeholder="Add some notes about this movie">{{ movie.notes or '' }}</textarea><br><br>
+
+        <input type="submit" value="Update Movie">
+    </form>
+</body>
+</html>

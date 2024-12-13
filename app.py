@@ -133,7 +133,55 @@ def add_movie(user_id):
 
 @app.route('/users/<user_id>/update_movie/<movie_id>', methods=['GET', 'POST'])
 def update_movie(user_id, movie_id):
-    pass
+    if request.method == "GET":
+        try:
+            movie = data.get_movie(movie_id)
+        except sqlalchemy.exc.NoResultFound:
+            return redirect('/404')
+        return render_template('update_movie.html', movie=movie, user_id=user_id)
+
+    if request.method == "POST":
+        # Retrieve form data
+        custom_title = request.form.get('title').strip()
+        custom_rating = request.form.get('rating').strip()
+        custom_notes = request.form.get('notes', '').strip()
+
+        # Ensure title and rating are provided
+        if not custom_title or not custom_rating:
+            warning_message = "Both title and rating are required."
+            return render_template(
+                'update_movie.html',
+                movie=data.get_movie(movie_id),
+                warning_message=warning_message,
+                user_id=user_id
+            )
+
+        try:
+            # Update the movie in the user's collection
+            data.update_movie(
+                movie_id=movie_id,
+                title=custom_title,
+                rating=custom_rating,
+                notes=custom_notes
+            )
+        except Exception as e:
+            print(f"Error updating movie: {e}")
+            error_message = "An error occurred while updating the movie. Please try again."
+            return render_template(
+                'update_movie.html',
+                movie=data.get_movie(movie_id),
+                warning_message=error_message,
+                user_id=user_id
+            )
+
+        # Success
+        success_message = f"Movie '{custom_title}' updated successfully!"
+        return render_template(
+            'update_movie.html',
+            movie=data.get_movie(movie_id),
+            success_message=success_message,
+            user_id=user_id
+        )
 
 
 @app.route('/users/<user_id>/delete_movie/<movie_id>', methods=['GET'])
