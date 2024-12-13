@@ -28,6 +28,13 @@ def list_users():
     return render_template('users.html', users=users, message=message)
 
 
+@app.route('/movies', methods=['GET'])
+def movies():
+    movies = data.get_all_movies()
+    message = request.args.get('message')
+    return render_template('movies.html', movies=movies, message=message)
+
+
 @app.route('/users/<user_id>', methods=['GET'])
 def user_movies(user_id):
     try:

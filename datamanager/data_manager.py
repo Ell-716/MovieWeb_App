@@ -99,3 +99,12 @@ class DataManagerInterface(ABC):
             None
         """
         pass
+
+    @abstractmethod
+    def get_all_movies(self) -> list[Movie]:
+        """
+        Retrieve all movies from the database.
+        Returns:
+            list[Movie]: A list of all movie objects.
+        """
+        pass
