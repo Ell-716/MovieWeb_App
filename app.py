@@ -148,7 +148,7 @@ def update_movie(user_id, movie_id):
                                    warning_message=warning_message, user_id=user_id)
 
         try:
-            data.update_movie(movie_id=movie_id, title=custom_title, rating=custom_rating)
+            data.update_movie(movie_id=movie_id, user_id=user_id, rating=custom_rating)
         except Exception as e:
             print(f"Error updating movie: {e}")
             error_message = "An error occurred while updating the movie. Please try again."
@@ -161,7 +161,7 @@ def update_movie(user_id, movie_id):
 
 
 @app.route('/users/<int:user_id>/delete_movie/<int:movie_id>', methods=['GET'])
-def delete_movie_route(user_id, movie_id):
+def delete_movie(user_id, movie_id):
     """Delete a movie from a user's collection."""
     try:
         movie_to_delete = data.delete_movie(user_id, movie_id)

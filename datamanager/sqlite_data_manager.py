@@ -262,14 +262,12 @@ class SQLiteDataManager(DataManagerInterface):
             self.db.session.rollback()
             return None  # Return None in case of an error
 
-    def update_movie(self, movie_id, title=None, director=None, release_year=None, rating=None):
+    def update_movie(self, movie_id, user_id, rating=None):
         """
         Update the details of an existing movie in the database.
         Args:
             movie_id (int): The ID of the movie to update.
-            title (str, optional): The new title of the movie. Defaults to None.
-            director (str, optional): The new director of the movie. Defaults to None.
-            release_year (int, optional): The new release year of the movie. Defaults to None.
+            user_id (int): The ID of the user to update.
             rating (float, optional): The new rating of the movie. Defaults to None.
         Returns:
             str: A success message if the movie is updated successfully.
@@ -280,10 +278,6 @@ class SQLiteDataManager(DataManagerInterface):
             if not movie_to_update:
                 return f"Movie with ID {movie_id} does not exist."
 
-            # Update the movie details
-            movie_to_update.title = title or movie_to_update.title
-            movie_to_update.director = director or movie_to_update.director
-            movie_to_update.release_year = release_year or movie_to_update.release_year
             movie_to_update.rating = rating or movie_to_update.rating
 
             # Commit the changes

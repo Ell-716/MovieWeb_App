@@ -85,15 +85,12 @@ class DataManagerInterface(ABC):
         pass
 
     @abstractmethod
-    def update_movie(self, movie_id: int, title: str = None, director: str = None,
-                     release_year: int = None, rating: float = None) -> None:
+    def update_movie(self, movie_id: int, user_id: int,  rating: float = None) -> None:
         """
         Update the details of an existing movie.
         Args:
             movie_id (int): The unique identifier of the movie to update.
-            title (str, optional): The new title of the movie.
-            director (str, optional): The new director of the movie.
-            release_year (int, optional): The new release year of the movie.
+            user_id (int): The unique identifier of the user to update.
             rating (float, optional): The new rating of the movie.
         Returns:
             None

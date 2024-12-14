@@ -32,7 +32,7 @@
                         </a>
 
                         <!-- Delete Button -->
-                        <form action="{{ url_for('delete_movie_route', user_id=user.id, movie_id=movie.id) }}" method="GET" style="display:inline;">
+                        <form action="{{ url_for('delete_movie', user_id=user.id, movie_id=movie.id) }}" method="GET" style="display:inline;">
                             <button type="submit">Delete Movie</button>
                         </form>
                     </li>
