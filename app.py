@@ -237,9 +237,9 @@ def delete_user(user_id):
         return redirect(f'/users?message={warning_message}')
 
 
-@app.route('/404')
-def page_not_found():
-    """Render a custom 404 error page."""
+@app.errorhandler(404)
+def handle_404_error():
+    """Handle 404 errors globally."""
     return render_template('404.html'), 404
 
 
