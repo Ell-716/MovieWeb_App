@@ -32,6 +32,11 @@
             <a href="{{ url_for('update_movie', user_id=user.id, movie_id=1) }}"> <!-- Placeholder movie_id -->
                 <button>Update Movie for {{ user.name }}</button>
             </a>
+
+            <!-- Button to update user information -->
+            <a href="{{ url_for('update_user', user_id=user.id) }}">
+                <button>Update {{ user.name }}</button>
+            </a>
         </li>
         {% endfor %}
     </ul>

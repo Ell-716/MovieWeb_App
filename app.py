@@ -202,7 +202,41 @@ def delete_movie(user_id, movie_id):
 
 @app.route('/users/<user_id>/update_user', methods=['GET', 'POST'])
 def update_user(user_id):
-    pass
+    if request.method == "GET":
+        try:
+            user = data.get_user(user_id)
+        except sqlalchemy.exc.NoResultFound:
+            return redirect('/404')
+        return render_template('update_user.html', user=user, user_id=user_id)
+
+    if request.method == "POST":
+        user_name = request.form.get("name").strip()
+
+        if not user_name:
+            warning_message = "Username can't be empty."
+            return render_template(
+                'update_user.html',
+                user_id=user_id,
+                warning_message=warning_message,
+            )
+
+        try:
+            data.update_user(user_id=user_id, user_name=user_name)
+        except Exception as e:
+            print(f"Error updating user: {e}")
+            error_message = "An error occurred while updating the user. Please try again."
+            return render_template(
+                'update_user.html',
+                user_id=user_id,
+                warning_message=error_message,
+            )
+
+        success_message = f"User '{user_name}' updated successfully!"
+        return render_template(
+            'update_user.html',
+            success_message=success_message,
+            user_id=user_id,
+        )
 
 
 @app.route('/users/<user_id>/delete_user', methods=['GET'])
