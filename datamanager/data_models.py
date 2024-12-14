@@ -55,15 +55,10 @@ class UserMovies(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     movie_id = db.Column(db.Integer, db.ForeignKey('movies.id'), nullable=False)
-    custom_title = db.Column(db.String(100), nullable=False)
-    custom_rating = db.Column(db.Float, nullable=False)
-    custom_notes = db.Column(db.String, nullable=True)
 
     # Relationships
     user = db.relationship('User', back_populates='user_movies')
     movie = db.relationship('Movie', back_populates='user_movies')
 
     def __repr__(self):
-        return (f"UserMovies(id = {self.id}, user_id = {self.user_id}, movie_id = {self.movie_id}, "
-                f"custom_title = {self.custom_title}, custom_rating = {self.custom_rating}, "
-                f"custom_notes = {self.custom_notes})")
+        return f"UserMovies(id = {self.id}, user_id = {self.user_id}, movie_id = {self.movie_id}"

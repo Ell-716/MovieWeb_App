@@ -2,7 +2,6 @@ import os
 import sqlalchemy
 from flask import Flask, request, render_template, redirect
 from datamanager.sqlite_data_manager import SQLiteDataManager
-from api_helper import fetch_movie_data
 
 app = Flask(__name__)
 
@@ -119,7 +118,7 @@ def add_movie(user_id):
             return render_template('add_movie.html', user=user_name, warning_message=warning_message)
 
         try:
-            data.add_movie(title)
+            data.add_movie(user_id, title)
         except Exception as e:
             print(f"Error adding movie: {e}")
             error_message = "An error occurred while adding the movie. Please try again."

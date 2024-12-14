@@ -169,10 +169,11 @@ class SQLiteDataManager(DataManagerInterface):
             print(f"Error fetching movie with ID {movie_id}: {e}")
             raise  # Re-raise the original exception
 
-    def add_movie(self, title, release_year=None, director=None, rating=None, poster=None):
+    def add_movie(self, user_id, title, release_year=None, director=None, rating=None, poster=None):
         """
-        Add a new movie to the database by first fetching data from OMDb if not provided.
+        Add a new movie to the database and link it to a user.
         Args:
+            user_id (int): The ID of the user adding the movie.
             title (str): The title of the movie.
             release_year (int, optional): The release year of the movie. Defaults to None.
             director (str, optional): The director of the movie. Defaults to None.
@@ -182,6 +183,7 @@ class SQLiteDataManager(DataManagerInterface):
             None: Confirms the movie has been added.
         """
         try:
+            # Fetch additional movie data from OMDb if not provided
             movie_data = fetch_movie_data(title)
             if movie_data:
                 director = director or movie_data['director']
@@ -189,14 +191,35 @@ class SQLiteDataManager(DataManagerInterface):
                 poster = poster or movie_data['poster']
                 release_year = release_year or movie_data['release_year']
 
-            # Create a new movie and add it to the database
-            new_movie = Movie(title=title, release_year=release_year,
-                              director=director, rating=rating, poster=poster)
-            self.db.session.add(new_movie)
+            # Check if the movie already exists in the database
+            existing_movie = (
+                self.db.session.query(Movie)
+                .filter_by(title=title, release_year=release_year)
+                .first()
+            )
+
+            if not existing_movie:
+                # Create a new movie and add it to the database
+                new_movie = Movie(
+                    title=title,
+                    release_year=release_year,
+                    director=director,
+                    rating=rating,
+                    poster=poster,
+                )
+                self.db.session.add(new_movie)
+                self.db.session.commit()
+                movie_id = new_movie.id  # Get the ID of the newly added movie
+            else:
+                movie_id = existing_movie.id  # Use the existing movie's ID
+
+            # Link the movie to the user in the UserMovies table
+            user_movie = UserMovies(user_id=user_id, movie_id=movie_id)
+            self.db.session.add(user_movie)
             self.db.session.commit()
 
         except SQLAlchemyError as e:
-            print(f"Error adding movie '{title}': {e}")
+            print(f"Error adding movie '{title}' for user {user_id}: {e}")
             self.db.session.rollback()
             raise ValueError(f"Could not add movie '{title}'. Please try again.")
 
