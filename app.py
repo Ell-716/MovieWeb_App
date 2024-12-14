@@ -2,17 +2,21 @@ import os
 import sqlalchemy
 from flask import Flask, request, render_template, redirect
 from datamanager.sqlite_data_manager import SQLiteDataManager
+from api_helper import fetch_movie_data
 
 app = Flask(__name__)
 
+# Configure SQLite URI
 base_dir = os.path.abspath(os.path.dirname(__file__))
 app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{base_dir}/data/movies.sqlite"
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+# Initialize DataManager
 data = SQLiteDataManager(app)
 
-# run once to create the database tables
+# run once to create tables
 # with app.app_context():
-#     data.db.create_all()
+    # data.db.create_all()
 
 
 @app.route('/', methods=['GET'])
@@ -118,14 +122,25 @@ def add_movie(user_id):
             warning_message = "Please enter a valid year (1800–2024)."
             return render_template('add_movie.html', user=user_name, warning_message=warning_message)
 
+        # Fetch movie data from OMDb API
+        movie_data = fetch_movie_data(title, year)
+        if not movie_data:
+            warning_message = "Movie not found. Please check the title and year and try again."
+            return render_template('add_movie.html', user=user_name, warning_message=warning_message)
+
+        # If multiple results are found, allow user to select one
+        if isinstance(movie_data, list):
+            return render_template('select_movie.html', movies=movie_data, user=user_name)
+
+        # If only one movie is found or the user selects a movie, add it
         try:
-            data.add_movie(user_id, title, year)
+            data.add_movie(user_id, movie_data['Title'], movie_data['Year'])
         except Exception as e:
             print(f"Error adding movie: {e}")
             error_message = "An error occurred while adding the movie. Please try again."
             return render_template('add_movie.html', user=user_name, warning_message=error_message)
 
-        success_message = f"Movie '{title}' ({year}) added successfully!"
+        success_message = f"Movie '{movie_data['Title']}' ({movie_data['Year']}) added successfully!"
         return render_template('add_movie.html', user=user_name, success_message=success_message)
 
 
@@ -142,28 +157,30 @@ def update_movie(user_id, movie_id):
     if request.method == "POST":
         custom_title = request.form.get('title').strip()
         custom_rating = request.form.get('rating').strip()
-        custom_notes = request.form.get('notes', '').strip()
 
         if not custom_title or not custom_rating:
             warning_message = "Both title and rating are required."
-            return render_template('update_movie.html', movie=data.get_movie(movie_id), warning_message=warning_message, user_id=user_id)
+            return render_template('update_movie.html', movie=data.get_movie(movie_id),
+                                   warning_message=warning_message, user_id=user_id)
 
         try:
-            data.update_movie(movie_id=movie_id, title=custom_title, rating=custom_rating, notes=custom_notes)
+            data.update_movie(movie_id=movie_id, title=custom_title, rating=custom_rating)
         except Exception as e:
             print(f"Error updating movie: {e}")
             error_message = "An error occurred while updating the movie. Please try again."
-            return render_template('update_movie.html', movie=data.get_movie(movie_id), warning_message=error_message, user_id=user_id)
+            return render_template('update_movie.html', movie=data.get_movie(movie_id),
+                                   warning_message=error_message, user_id=user_id)
 
         success_message = f"Movie '{custom_title}' updated successfully!"
-        return render_template('update_movie.html', movie=data.get_movie(movie_id), success_message=success_message, user_id=user_id)
+        return render_template('update_movie.html', movie=data.get_movie(movie_id),
+                               success_message=success_message, user_id=user_id)
 
 
 @app.route('/users/<user_id>/delete_movie/<movie_id>', methods=['GET'])
 def delete_movie(user_id, movie_id):
     """Delete a movie from a user's collection."""
     try:
-        movie_to_delete = data.delete_movie(user_id, movie_id)
+        movie_to_delete = data.delete_movie(user_id)
         if not movie_to_delete:
             warning_message = f"Movie with ID {movie_id} not found."
             return redirect(f'/users/{user_id}?message={warning_message}')

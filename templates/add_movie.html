@@ -8,7 +8,30 @@
 </head>
 <body>
     <h1>Add Movie</h1>
-    <form method="POST" action="/add_movie">
+
+    <!-- Movie search or manual entry form -->
+    <form method="POST" action="/users/{{ user_id }}/add_movie">
+        <!-- Optional: Search for movie by title -->
+        <label for="search_title">Search for a movie:</label>
+        <input type="text" id="search_title" name="search_title" value="{{ search_title }}">
+        <button type="submit">Search</button>
+    </form>
+
+    {% if movies %}
+        <!-- Show movie search results if any -->
+        <h3>Select a movie from the search results:</h3>
+        <form method="POST" action="/users/{{ user_id }}/add_movie">
+            {% for movie in movies %}
+                <div>
+                    <input type="radio" id="movie{{ loop.index }}" name="selected_movie" value="{{ movie['imdbID'] }}">
+                    <label for="movie{{ loop.index }}">{{ movie['Title'] }} ({{ movie['Year'] }})</label>
+                </div>
+            {% endfor %}
+            <button type="submit">Select Movie</button>
+        </form>
+    {% else %}
+        <!-- No search results, show manual movie entry -->
+        <h3>Or, add movie manually:</h3>
         <label for="title">Title:</label>
         <input type="text" id="title" name="title" required>
         <br>
@@ -16,12 +39,15 @@
         <input type="text" id="year" name="year" required>
         <br>
         <button type="submit">Add Movie</button>
-    </form>
-    {% if warning_message %}
-    <p style="color: red;">{{ warning_message }}</p>
-    {% elif success_message %}
-    <p style="color: green;">{{ success_message }}</p>
     {% endif %}
+
+    <!-- Display success or error messages -->
+    {% if warning_message %}
+        <p style="color: red;">{{ warning_message }}</p>
+    {% elif success_message %}
+        <p style="color: green;">{{ success_message }}</p>
+    {% endif %}
+
     <a href="/movies"><button>Back to Movies</button></a>
 </body>
 </html>

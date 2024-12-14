@@ -1,7 +1,7 @@
-from datamanager.data_models import User, Movie, UserMovies
+from datamanager.data_models import db, User, Movie, UserMovies
 from datamanager.data_manager import DataManagerInterface
 from sqlalchemy.exc import SQLAlchemyError
-from flask_sqlalchemy import SQLAlchemy
+from api_helper import fetch_movie_data
 
 
 class SQLiteDataManager(DataManagerInterface):
@@ -15,7 +15,8 @@ class SQLiteDataManager(DataManagerInterface):
         Args:
             app: The Flask application instance.
         """
-        self.db = SQLAlchemy(app)
+        db.init_app(app)  # Initialize SQLAlchemy with Flask app
+        self.db = db
 
     def get_all_users(self):
         """
@@ -95,7 +96,7 @@ class SQLiteDataManager(DataManagerInterface):
         except SQLAlchemyError as e:
             print(f"Error adding user '{user_name}': {e}")
             self.db.session.rollback()
-            raise ValueError(f"Could not add user '{user_name}'. Please try again.")
+            raise ValueError(f"Could not add user '{user_name}'. Please try again. Error: {str(e)}")
 
     def delete_user(self, user_id):
         """
@@ -170,7 +171,7 @@ class SQLiteDataManager(DataManagerInterface):
 
     def add_movie(self, title, release_year=None, director=None, rating=None, poster=None):
         """
-        Add a new movie to the database.
+        Add a new movie to the database by first fetching data from OMDb if not provided.
         Args:
             title (str): The title of the movie.
             release_year (int, optional): The release year of the movie. Defaults to None.
@@ -181,6 +182,19 @@ class SQLiteDataManager(DataManagerInterface):
             str: A success message if the movie is added successfully.
         """
         try:
+            # Fetch movie data if not provided
+            if not all([director, rating, poster]):
+                movie_data = fetch_movie_data(title, release_year)
+                if movie_data:
+                    director = director or movie_data['director']
+                    rating = rating or movie_data['rating']
+                    poster = poster or movie_data['poster']
+                    release_year = release_year or movie_data['release_year']
+
+            # If required fields are still missing, raise an exception
+            if not all([director, rating, poster]):
+                raise ValueError("Missing necessary movie details.")
+
             new_movie = Movie(title=title, release_year=release_year,
                               director=director, rating=rating, poster=poster)
             self.db.session.add(new_movie)
