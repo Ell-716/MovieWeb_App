@@ -6,10 +6,8 @@ from requests.exceptions import HTTPError, ConnectionError, Timeout
 load_dotenv()
 API_KEY = os.getenv("API_KEY")
 
-
-def fetch_movie_data(title, release_year=None):
-    api_url = f"http://www.omdbapi.com/?apikey={API_KEY}&t={title}&y={release_year}" if release_year else \
-        f"http://www.omdbapi.com/?apikey={API_KEY}&t={title}"
+def fetch_movie_data(title):
+    api_url = f"http://www.omdbapi.com/?apikey={API_KEY}&t={title}"
 
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
@@ -34,7 +32,6 @@ def fetch_movie_data(title, release_year=None):
         print(f"Error fetching movie data: {data['Error']}")
         return None
 
-    # If there is no search result, return the movie's main data
     movie_data = {
         'title': data.get('Title', ''),
         'release_year': data.get('Year', ''),
@@ -43,18 +40,5 @@ def fetch_movie_data(title, release_year=None):
         'poster': data.get('Poster', 'N/A')
     }
 
-    # Check if the fetched title exactly matches the input title
-    fetched_title = data.get('Title', '').lower()
-    input_title = title.lower()
-
-    # If there's a partial match, confirm with the user
-    if fetched_title != input_title:
-        print(f"Did you mean '{data['Title']}'? (y/n)")
-        user_input = input().strip().lower()
-        if user_input == 'y':
-            return movie_data
-        print("Please enter the full movie name or refine the title.")
-        title = input("Enter movie name: ")
-        return fetch_movie_data(title, release_year)
-
+    # Return movie data if everything is fine
     return movie_data

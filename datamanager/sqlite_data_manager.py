@@ -223,29 +223,44 @@ class SQLiteDataManager(DataManagerInterface):
             self.db.session.rollback()
             raise ValueError(f"Could not add movie '{title}'. Please try again.")
 
-    def delete_movie(self, movie_id):
+    def delete_movie(self, user_id, movie_id):
         """
-        Delete a movie from the database.
+        Delete a movie from a user's collection and from the movie database if no other user is associated.
         Args:
+            user_id (int): The ID of the user deleting the movie.
             movie_id (int): The ID of the movie to delete.
         Returns:
-            str: A success message if the movie is deleted.
+            movie: The movie object if successful, or None if not found.
         """
         try:
-            # Check if the movie exists
-            movie_to_delete = self.get_movie(movie_id)
-            if not movie_to_delete:
-                return f"Movie with ID {movie_id} does not exist."
+            # Find the UserMovies entry linking the user and the movie
+            user_movie = self.db.session.query(UserMovies).filter_by(user_id=user_id, movie_id=movie_id).first()
 
-            # Delete the movie and commit the changes
-            self.db.session.delete(movie_to_delete)
+            if not user_movie:
+                return None  # Return None if the relationship does not exist
+
+            # Fetch the movie object from the Movie table
+            movie = self.db.session.query(Movie).filter_by(id=movie_id).first()
+
+            if not movie:
+                return None  # Return None if no movie exists with the given ID
+
+            # Delete the relationship between the user and the movie
+            self.db.session.delete(user_movie)
+
+            # If no other users are associated with the movie, delete it from the Movie table
+            if not self.db.session.query(UserMovies).filter_by(movie_id=movie_id).first():
+                self.db.session.delete(movie)
+
+            # Commit the changes
             self.db.session.commit()
-            return f"Movie '{movie_to_delete.title}' was deleted successfully!"
+
+            return movie  # Return the movie object after successful deletion
 
         except SQLAlchemyError as e:
-            print(f"Error deleting movie with ID {movie_id}: {e}")
+            print(f"Error deleting movie for user {user_id}: {e}")
             self.db.session.rollback()
-            raise ValueError(f"Could not delete movie with ID {movie_id}. Please try again.")
+            return None  # Return None in case of an error
 
     def update_movie(self, movie_id, title=None, director=None, release_year=None, rating=None):
         """

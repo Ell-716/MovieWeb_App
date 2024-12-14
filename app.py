@@ -14,8 +14,8 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 data = SQLiteDataManager(app)
 
 # run once to create tables
-with app.app_context():
-    data.db.create_all()
+# with app.app_context():
+    # data.db.create_all()
 
 
 @app.route('/', methods=['GET'])
@@ -160,16 +160,17 @@ def update_movie(user_id, movie_id):
                                success_message=success_message, user_id=user_id)
 
 
-@app.route('/users/<user_id>/delete_movie/<movie_id>', methods=['GET'])
-def delete_movie(user_id, movie_id):
+@app.route('/users/<int:user_id>/delete_movie/<int:movie_id>', methods=['GET'])
+def delete_movie_route(user_id, movie_id):
     """Delete a movie from a user's collection."""
     try:
-        movie_to_delete = data.delete_movie(user_id)
+        movie_to_delete = data.delete_movie(user_id, movie_id)
+
         if not movie_to_delete:
-            warning_message = f"Movie with ID {movie_id} not found."
+            warning_message = f"Movie with ID {movie_id} not found in the user's collection."
             return redirect(f'/users/{user_id}?message={warning_message}')
 
-        success_message = f"Movie '{movie_to_delete}' deleted successfully!"
+        success_message = f"Movie '{movie_to_delete.title}' deleted successfully!"
         return redirect(f'/users/{user_id}?message={success_message}')
 
     except Exception as e:
