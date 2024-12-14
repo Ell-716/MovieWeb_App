@@ -15,8 +15,8 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 data = SQLiteDataManager(app)
 
 # run once to create tables
-# with app.app_context():
-    # data.db.create_all()
+with app.app_context():
+    data.db.create_all()
 
 
 @app.route('/', methods=['GET'])
@@ -112,35 +112,20 @@ def add_movie(user_id):
 
     if request.method == "POST":
         title = request.form.get('title', '').strip()
-        year = request.form.get('year', '').strip()
 
+        # Validate title
         if not title:
             warning_message = "Title is required."
             return render_template('add_movie.html', user=user_name, warning_message=warning_message)
 
-        if not year.isdigit() or not (1800 <= int(year) <= 2024):
-            warning_message = "Please enter a valid year (1800–2024)."
-            return render_template('add_movie.html', user=user_name, warning_message=warning_message)
-
-        # Fetch movie data from OMDb API
-        movie_data = fetch_movie_data(title, year)
-        if not movie_data:
-            warning_message = "Movie not found. Please check the title and year and try again."
-            return render_template('add_movie.html', user=user_name, warning_message=warning_message)
-
-        # If multiple results are found, allow user to select one
-        if isinstance(movie_data, list):
-            return render_template('select_movie.html', movies=movie_data, user=user_name)
-
-        # If only one movie is found or the user selects a movie, add it
         try:
-            data.add_movie(user_id, movie_data['Title'], movie_data['Year'])
+            data.add_movie(title)
         except Exception as e:
             print(f"Error adding movie: {e}")
             error_message = "An error occurred while adding the movie. Please try again."
             return render_template('add_movie.html', user=user_name, warning_message=error_message)
 
-        success_message = f"Movie '{movie_data['Title']}' ({movie_data['Year']}) added successfully!"
+        success_message = f"Movie '{title}' added successfully!"
         return render_template('add_movie.html', user=user_name, success_message=success_message)
 
 

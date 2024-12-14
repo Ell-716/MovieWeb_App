@@ -1,3 +1,4 @@
+<!-- movies.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,14 +13,20 @@
         <a href="/">Home</a>
         <a href="/users">Users</a>
         <a href="/movies"><button>Movies</button></a>
-        <a href="/add_movie"><button>Add Movie</button></a> <!-- Add Movie Button -->
     </nav>
-    <ul>
-        {% for movie in movies %}
-        <li>
-            {{ movie.title }} ({{ movie.release_year }}) - Directed by {{ movie.director }}
-        </li>
-        {% endfor %}
-    </ul>
+
+    {% if message %}
+        <p style="color: green;">{{ message }}</p>
+    {% endif %}
+
+    {% if movies %}
+        <ul>
+            {% for movie in movies %}
+                <li>{{ movie.title }} ({{ movie.release_year }}) - Rating: {{ movie.rating }}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No movies available.</p>
+    {% endif %}
 </body>
 </html>
