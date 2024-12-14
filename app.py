@@ -3,7 +3,6 @@ import sqlalchemy
 from flask import Flask, request, render_template, redirect
 from datamanager.sqlite_data_manager import SQLiteDataManager
 
-
 app = Flask(__name__)
 
 base_dir = os.path.abspath(os.path.dirname(__file__))
@@ -11,18 +10,20 @@ app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{base_dir}/data/movies.sqlit
 
 data = SQLiteDataManager(app)
 
-# Run this one once
+# run once to create the database tables
 # with app.app_context():
-    # data.db.create_all()
+#     data.db.create_all()
 
 
 @app.route('/', methods=['GET'])
 def home():
+    """Render the home page."""
     return render_template('home.html')
 
 
 @app.route('/users', methods=['GET'])
 def list_users():
+    """Display a list of all users with an optional message."""
     users = data.get_all_users()
     message = request.args.get('message')
     return render_template('users.html', users=users, message=message)
@@ -30,6 +31,7 @@ def list_users():
 
 @app.route('/movies', methods=['GET'])
 def movies():
+    """Display a list of all movies with an optional message."""
     movies = data.get_all_movies()
     message = request.args.get('message')
     return render_template('movies.html', movies=movies, message=message)
@@ -37,26 +39,24 @@ def movies():
 
 @app.route('/users/<user_id>', methods=['GET'])
 def user_movies(user_id):
+    """Display a list of movies for a specific user."""
     try:
         user_name = data.get_user(user_id)
         if not user_name:
-            return redirect('/404')  # Handle case where user is not found
+            return redirect('/404')
     except sqlalchemy.exc.NoResultFound:
-        return redirect('/404')  # Redirect to a 404 page if no user is found
+        return redirect('/404')
     except sqlalchemy.exc.SQLAlchemyError as e:
-        print(f"Database error: {e}")  # Log SQLAlchemy-related errors for debugging
-        return redirect('/error')  # Redirect to a generic error page
+        print(f"Database error: {e}")
+        return redirect('/error')
     except Exception as e:
-        print(f"Unexpected error: {e}")  # Log unexpected errors
+        print(f"Unexpected error: {e}")
         return redirect('/error')
 
     try:
         movies = data.get_user_movies(user_id)
-    except sqlalchemy.exc.SQLAlchemyError as e:
-        print(f"Error fetching movies for user {user_id}: {e}")
-        movies = []  # Default to an empty list of movies on error
     except Exception as e:
-        print(f"Unexpected error while fetching movies: {e}")
+        print(f"Error fetching movies for user {user_id}: {e}")
         movies = []
 
     message = request.args.get('message')
@@ -65,18 +65,17 @@ def user_movies(user_id):
 
 @app.route('/add_user', methods=['GET', 'POST'])
 def add_user():
+    """Add a new user to the system."""
     if request.method == "GET":
         return render_template("add_user.html")
 
     if request.method == "POST":
         name = request.form.get('name').strip()
 
-        # Check if the name is empty
         if not name:
             warning_message = "Name is required."
             return render_template("add_user.html", warning_message=warning_message)
 
-        # Ensure the name is not too short or too long
         if len(name) < 2:
             warning_message = "Name must be at least 2 characters long."
             return render_template("add_user.html", warning_message=warning_message)
@@ -98,6 +97,7 @@ def add_user():
 
 @app.route('/users/<int:user_id>/add_movie', methods=['GET', 'POST'])
 def add_movie(user_id):
+    """Add a new movie to a user's collection."""
     try:
         user_name = data.get_user(user_id)
     except sqlalchemy.exc.NoResultFound:
@@ -110,12 +110,10 @@ def add_movie(user_id):
         title = request.form.get('title', '').strip()
         year = request.form.get('year', '').strip()
 
-        # Validate title
         if not title:
             warning_message = "Title is required."
             return render_template('add_movie.html', user=user_name, warning_message=warning_message)
 
-        # Validate year
         if not year.isdigit() or not (1800 <= int(year) <= 2024):
             warning_message = "Please enter a valid year (1800–2024)."
             return render_template('add_movie.html', user=user_name, warning_message=warning_message)
@@ -133,6 +131,7 @@ def add_movie(user_id):
 
 @app.route('/users/<user_id>/update_movie/<movie_id>', methods=['GET', 'POST'])
 def update_movie(user_id, movie_id):
+    """Update details of a specific movie for a user."""
     if request.method == "GET":
         try:
             movie = data.get_movie(movie_id)
@@ -141,51 +140,28 @@ def update_movie(user_id, movie_id):
         return render_template('update_movie.html', movie=movie, user_id=user_id)
 
     if request.method == "POST":
-        # Retrieve form data
         custom_title = request.form.get('title').strip()
         custom_rating = request.form.get('rating').strip()
         custom_notes = request.form.get('notes', '').strip()
 
-        # Ensure title and rating are provided
         if not custom_title or not custom_rating:
             warning_message = "Both title and rating are required."
-            return render_template(
-                'update_movie.html',
-                movie=data.get_movie(movie_id),
-                warning_message=warning_message,
-                user_id=user_id
-            )
+            return render_template('update_movie.html', movie=data.get_movie(movie_id), warning_message=warning_message, user_id=user_id)
 
         try:
-            # Update the movie in the user's collection
-            data.update_movie(
-                movie_id=movie_id,
-                title=custom_title,
-                rating=custom_rating,
-                notes=custom_notes
-            )
+            data.update_movie(movie_id=movie_id, title=custom_title, rating=custom_rating, notes=custom_notes)
         except Exception as e:
             print(f"Error updating movie: {e}")
             error_message = "An error occurred while updating the movie. Please try again."
-            return render_template(
-                'update_movie.html',
-                movie=data.get_movie(movie_id),
-                warning_message=error_message,
-                user_id=user_id
-            )
+            return render_template('update_movie.html', movie=data.get_movie(movie_id), warning_message=error_message, user_id=user_id)
 
-        # Success
         success_message = f"Movie '{custom_title}' updated successfully!"
-        return render_template(
-            'update_movie.html',
-            movie=data.get_movie(movie_id),
-            success_message=success_message,
-            user_id=user_id
-        )
+        return render_template('update_movie.html', movie=data.get_movie(movie_id), success_message=success_message, user_id=user_id)
 
 
 @app.route('/users/<user_id>/delete_movie/<movie_id>', methods=['GET'])
 def delete_movie(user_id, movie_id):
+    """Delete a movie from a user's collection."""
     try:
         movie_to_delete = data.delete_movie(user_id, movie_id)
         if not movie_to_delete:
@@ -196,12 +172,14 @@ def delete_movie(user_id, movie_id):
         return redirect(f'/users/{user_id}?message={success_message}')
 
     except Exception as e:
+        print(f"Error deleting movie: {e}")
         warning_message = f"An error occurred: {e}"
         return redirect(f'/users/{user_id}?message={warning_message}')
 
 
 @app.route('/users/<user_id>/update_user', methods=['GET', 'POST'])
 def update_user(user_id):
+    """Update a user's details."""
     if request.method == "GET":
         try:
             user = data.get_user(user_id)
@@ -214,43 +192,46 @@ def update_user(user_id):
 
         if not user_name:
             warning_message = "Username can't be empty."
-            return render_template(
-                'update_user.html',
-                user_id=user_id,
-                warning_message=warning_message,
-            )
+            return render_template('update_user.html', user_id=user_id, warning_message=warning_message)
 
         try:
             data.update_user(user_id=user_id, user_name=user_name)
         except Exception as e:
             print(f"Error updating user: {e}")
             error_message = "An error occurred while updating the user. Please try again."
-            return render_template(
-                'update_user.html',
-                user_id=user_id,
-                warning_message=error_message,
-            )
+            return render_template('update_user.html', user_id=user_id, warning_message=error_message)
 
         success_message = f"User '{user_name}' updated successfully!"
-        return render_template(
-            'update_user.html',
-            success_message=success_message,
-            user_id=user_id,
-        )
+        return render_template('update_user.html', success_message=success_message, user_id=user_id)
 
 
 @app.route('/users/<user_id>/delete_user', methods=['GET'])
 def delete_user(user_id):
-    pass
+    """Delete a user from the system."""
+    try:
+        user_to_delete = data.delete_user(user_id)
+        if not user_to_delete:
+            warning_message = f"User with ID {user_id} not found."
+            return redirect(f'/users?message={warning_message}')
+
+        success_message = f"User '{user_to_delete}' deleted successfully!"
+        return redirect(f'/users?message={success_message}')
+
+    except Exception as e:
+        print(f"Error deleting user: {e}")
+        warning_message = "An error occurred while deleting the user. Please try again."
+        return redirect(f'/users?message={warning_message}')
 
 
 @app.route('/404')
 def page_not_found():
+    """Render a custom 404 error page."""
     return render_template('404.html'), 404
 
 
 @app.route('/error')
 def error_page():
+    """Render a generic error page."""
     return render_template('error.html'), 500
 
 
