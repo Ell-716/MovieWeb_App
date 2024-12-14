@@ -183,9 +183,10 @@ def update_user(user_id):
     """Update a user's details."""
     if request.method == "GET":
         try:
+            # Fetch user details
             user = data.get_user(user_id)
         except sqlalchemy.exc.NoResultFound:
-            return redirect('/404')
+            return redirect('/404')  # Handle case where user is not found
         return render_template('update_user.html', user=user, user_id=user_id)
 
     if request.method == "POST":
@@ -193,17 +194,28 @@ def update_user(user_id):
 
         if not user_name:
             warning_message = "Username can't be empty."
-            return render_template('update_user.html', user_id=user_id, warning_message=warning_message)
+            try:
+                # Fetch user again to display current details
+                user = data.get_user(user_id)
+            except sqlalchemy.exc.NoResultFound:
+                return redirect('/404')
+            return render_template('update_user.html', user=user, user_id=user_id, warning_message=warning_message)
 
         try:
+            # Update user details
             data.update_user(user_id=user_id, user_name=user_name)
+            user = data.get_user(user_id)  # Fetch updated user details
         except Exception as e:
             print(f"Error updating user: {e}")
             error_message = "An error occurred while updating the user. Please try again."
-            return render_template('update_user.html', user_id=user_id, warning_message=error_message)
+            try:
+                user = data.get_user(user_id)
+            except sqlalchemy.exc.NoResultFound:
+                return redirect('/404')
+            return render_template('update_user.html', user=user, user_id=user_id, warning_message=error_message)
 
         success_message = f"User '{user_name}' updated successfully!"
-        return render_template('update_user.html', success_message=success_message, user_id=user_id)
+        return render_template('update_user.html', success_message=success_message, user=user, user_id=user_id)
 
 
 @app.route('/users/<user_id>/delete_user', methods=['GET'])

@@ -34,24 +34,6 @@ def fetch_movie_data(title, release_year=None):
         print(f"Error fetching movie data: {data['Error']}")
         return None
 
-    # Handle multiple results if present
-    if 'Search' in data:
-        print("Multiple results found:")
-        for idx, movie in enumerate(data['Search'], start=1):
-            print(f"{idx}. {movie['Title']} ({movie['Year']})")
-
-        selected_idx = int(input("Please select the correct movie number: ")) - 1
-        selected_movie = data['Search'][selected_idx]
-        # Extracting additional data for the selected movie
-        movie_data = {
-            'title': selected_movie['Title'],
-            'release_year': selected_movie['Year'],
-            'director': selected_movie.get('Director', 'N/A'),
-            'rating': selected_movie.get('imdbRating', 'N/A'),
-            'poster': selected_movie.get('Poster', 'N/A')
-        }
-        return movie_data
-
     # If there is no search result, return the movie's main data
     movie_data = {
         'title': data.get('Title', ''),
