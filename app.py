@@ -34,10 +34,9 @@ def list_users():
 
 @app.route('/movies', methods=['GET'])
 def movies():
-    """Display a list of all movies with an optional message."""
+    """Display a list of all movies."""
     movies = data.get_all_movies()
-    message = request.args.get('message')
-    return render_template('movies.html', movies=movies, message=message)
+    return render_template('movies.html', movies=movies)
 
 
 @app.route('/users/<user_id>', methods=['GET'])

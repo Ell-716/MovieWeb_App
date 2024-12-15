@@ -7,15 +7,22 @@ body {
 
 /* Specific backgrounds for each page */
 body.home {
-    background: url(background.jpg) no-repeat center center fixed;
+    background: url(background.jpeg) no-repeat center center fixed;
     background-size: cover;
 }
 
 body.add_user {
     background: url(background1.jpg) no-repeat center center fixed;
     background-size: cover;
-    margin: 0;
     font-family: Arial, sans-serif;
+    margin: 0;
+}
+
+body.movies {
+    background: url(background2.jpg) no-repeat center center fixed;
+    background-size: cover;
+    font-family: Arial, sans-serif;
+    margin: 0;
 }
 
 /* Navigation bar styles */
@@ -177,4 +184,92 @@ nav a button:hover {
 /* Warning message styling */
 .alert-warning {
     font-color: red;
+}
+
+/* Movies Section Styling */
+.movies-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+    justify-content: center;
+    padding: 20px;
+}
+
+/* Movie Card Styling */
+.movie-card {
+    width: 200px; /* Increase the card width */
+    height: 450px; /* Increase the card height */
+    padding: 15px; /* Adjust padding for better spacing */
+    border-radius: 10px; /* Slightly larger border radius for a polished look */
+    background-color: white;
+    color: black;
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2); /* Enhance shadow for better emphasis */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    margin-bottom: 25px; /* Slightly more spacing between rows */
+    overflow: hidden;
+    position: relative;
+}
+
+/* Poster Styling */
+.movie-poster {
+    width: 190px; /* Adjust width to match the new card size */
+    height: 270px; /* Increase height for better scaling */
+    border: 8px solid black;
+    border-radius: 8px;
+}
+
+.movie-details {
+    width: 100%; /* Ensure the details section spans the full width */
+    flex-grow: 1; /* Push content to fill available space */
+    padding: 15px;
+    font-color: white;
+    background-color: white;
+    box-sizing: border-box;
+    text-align: left;
+}
+
+.movie-title {
+    color: black;
+    font-size: 1.4em;
+    font-weight: bold;
+    margin: 6px 0 10px; /* Add space above and below */
+    line-height: 1.2em;
+    max-height: 2.4em; /* Limit to two lines */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap; /* Prevent wrapping */
+}
+
+.movie-year {
+    color: #666;
+    font-size: 0.9em;
+    margin: 3px 0;
+}
+
+.movie-rating {
+    color: #666;
+    font-size: 0.9em;
+    margin: 8px 0;
+}
+
+.movie-rating svg {
+    margin-right: 5px;
+}
+
+.movie-director {
+    color: #666;
+    font-size: 0.9em;
+    margin: 5px 0;
+    line-height: 1.2em;
+}
+
+.year {
+    text-decoration: underline;
+}
+
+.name {
+    text-decoration: underline;
 }
