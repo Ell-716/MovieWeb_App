@@ -5,16 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>MovieWeb App</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-    <h1>Welcome to MovieWeb App!</h1>
+    <body class="home">
     <nav>
         <a href="/"><button>Home</button></a>
         <a href="/users"><button>Users</button></a>
         <a href="/movies"><button>Movies</button></a>
     </nav>
 
-    <!-- Move the 'Add a User' button here -->
-    <a href="{{ url_for('add_user') }}" class="add-user"><button>Add a User</button></a>
+    <div class="content">
+        <h1><span class="filled">MovieWeb</span> <span class="outlined">App</span></h1>
+    </div>
+    <div class="description">
+        <p>Do you dream of having your very own movie gallery?</p>
+        <p>With MovieWeb App, you can make that a reality!</p>
+        <p>Organize and track your favorite movies, rate them,</p>
+        <p>and create a personalized collection.</p>
+        <p>Simply register as a user, start adding movies,</p>
+        <p>and experience cinema like never before!</p>
+    </div>
+    <a href="/add_user" class="add-user-btn">Add User</a>
 </body>
 </html>

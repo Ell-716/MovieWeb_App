@@ -238,13 +238,13 @@ def delete_user(user_id):
 
 
 @app.errorhandler(404)
-def handle_404_error():
+def handle_404_error(e):
     """Handle 404 errors globally."""
     return render_template('404.html'), 404
 
 
 @app.route('/error')
-def error_page():
+def error_page(e):
     """Render a generic error page."""
     return render_template('error.html'), 500
 
