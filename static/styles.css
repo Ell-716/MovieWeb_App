@@ -7,8 +7,15 @@ body {
 
 /* Specific backgrounds for each page */
 body.home {
-    background: url(background.jpeg) no-repeat center center fixed;
+    background: url(background.jpg) no-repeat center center fixed;
     background-size: cover;
+}
+
+body.add_user {
+    background: url(background1.jpg) no-repeat center center fixed;
+    background-size: cover;
+    margin: 0;
+    font-family: Arial, sans-serif;
 }
 
 /* Navigation bar styles */
@@ -99,4 +106,75 @@ nav a button:hover {
 .add-user-btn:hover {
     background-color: white;
     color: black;
+}
+/* Form styles */
+.styled-form {
+
+    padding: 30px;
+    border-radius: 10px;
+    width: 400px; /* Set a fixed width for the form */
+    text-align: center;
+    color: white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+    margin: 200px auto;
+}
+
+/* Label styles */
+.styled-form label {
+    display: block;
+    margin-bottom: 10px;
+    font-size: 1.2rem;
+    color: black;
+    font-weight: bold;
+}
+
+/* Input field styles */
+.styled-form input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px; /* Space between input and button */
+    font-size: 1rem;
+    border: 2px solid #ccc;
+    border-radius: 5px;
+    background-color: #f5f5f5;
+}
+
+/* Submit button styles */
+.styled-form input[type="submit"] {
+    background-color: black;
+    color: white;
+    padding: 15px 40px;
+    font-size: 1.2rem;
+    border: 2px solid black;
+    border-radius: 25px;
+    cursor: pointer;
+    width: 100%; /* Make button full width */
+    transition: all 0.3s ease;
+}
+
+.styled-form input[type="submit"]:hover {
+    background-color: white;
+    color: black;
+}
+
+/* Success and Warning messages will now be below the form */
+.alert {
+    text-align: center;
+    margin: 20px auto;
+    width: 80%;
+    max-width: 600px;
+    border-radius: 8px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: white;
+}
+
+/* Success message styling */
+.alert-success {
+    font-color: white;
+}
+
+/* Warning message styling */
+.alert-warning {
+    font-color: red;
 }
