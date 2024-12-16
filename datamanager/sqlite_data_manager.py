@@ -85,18 +85,12 @@ class SQLiteDataManager(DataManagerInterface):
         Args:
             user_name (str): The name of the user to add.
         Returns:
-            str: A success message.
+            str: user_name
         """
-        try:
-            new_user = User(name=user_name)
-            self.db.session.add(new_user)
-            self.db.session.commit()
-            return f"User '{user_name}' was added successfully!"
-
-        except SQLAlchemyError as e:
-            print(f"Error adding user '{user_name}': {e}")
-            self.db.session.rollback()
-            raise ValueError(f"Could not add user '{user_name}'. Please try again. Error: {str(e)}")
+        new_user = User(name=user_name)
+        self.db.session.add(new_user)
+        self.db.session.commit()
+        return user_name
 
     def delete_user(self, user_id):
         """
@@ -300,3 +294,18 @@ class SQLiteDataManager(DataManagerInterface):
         except SQLAlchemyError as e:
             print(f"Error fetching all movies: {e}")
             return []
+
+    def get_user_by_name(self, user_name):
+        """
+        Retrieve a user by their name.
+        Args:
+            user_name (str): The name of the user to retrieve.
+        Returns:
+            User: The user object if found, None otherwise.
+        """
+        try:
+            user = self.db.session.query(User).filter(User.name == user_name).one_or_none()
+            return user
+        except SQLAlchemyError as e:
+            print(f"Error fetching user with name '{user_name}': {e}")
+            raise  # Re-raise the original exception

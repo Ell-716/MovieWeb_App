@@ -177,20 +177,18 @@ nav a button:hover {
     margin: 20px auto;
     width: 80%;
     max-width: 600px;
-    border-radius: 8px;
     font-size: 1.2rem;
     font-weight: bold;
-    color: white;
 }
 
 /* Success message styling */
 .alert-success {
-    font-color: white;
+    color: white;
 }
 
 /* Warning message styling */
 .alert-warning {
-    font-color: red;
+    color: red;
 }
 
 /* Movies Section Styling */

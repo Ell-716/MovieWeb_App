@@ -1,5 +1,6 @@
 import os
 import sqlalchemy
+from sqlalchemy.exc import SQLAlchemyError
 from flask import Flask, request, render_template, redirect
 from datamanager.sqlite_data_manager import SQLiteDataManager
 
@@ -61,8 +62,7 @@ def user_movies(user_id):
         print(f"Error fetching movies for user {user_id}: {e}")
         movies = []
 
-    message = request.args.get('message')
-    return render_template('user_movies.html', user=user_name, movies=movies, message=message)
+    return render_template('user_movies.html', user=user_name, movies=movies)
 
 
 @app.route('/add_user', methods=['GET', 'POST'])
@@ -74,10 +74,12 @@ def add_user():
     if request.method == "POST":
         name = request.form.get('name').strip()
 
+        # Validation: Check if the name is provided
         if not name:
             warning_message = "Name is required."
             return render_template("add_user.html", warning_message=warning_message)
 
+        # Validation: Check if the name length is valid
         if len(name) < 2:
             warning_message = "Name must be at least 2 characters long."
             return render_template("add_user.html", warning_message=warning_message)
@@ -87,10 +89,28 @@ def add_user():
             return render_template("add_user.html", warning_message=warning_message)
 
         try:
+            # Check if the user already exists by name
+            existing_user = data.get_user_by_name(name)
+            if existing_user:
+                warning_message = f"The user '{name}' already exists."
+                return render_template("add_user.html", warning_message=warning_message)
+
+            # Add the new user
             data.add_user(name)
+        except ValueError as ve:
+            # Catch specific application-level errors
+            print(f"Validation error: {ve}")
+            warning_message = str(ve)
+            return render_template("add_user.html", warning_message=warning_message)
+        except SQLAlchemyError as sqle:
+            # Handle SQLAlchemy-specific database errors
+            print(f"Database error: {sqle}")
+            error_message = "A database error occurred. Please try again."
+            return render_template("add_user.html", warning_message=error_message)
         except Exception as e:
-            print(f"Error adding user: {e}")
-            error_message = "An error occurred while adding the user. Please try again."
+            # Catch any other unforeseen errors
+            print(f"Unexpected error: {e}")
+            error_message = "An unexpected error occurred. Please try again."
             return render_template("add_user.html", warning_message=error_message)
 
         success_message = f"User '{name}' added successfully!"
@@ -114,17 +134,20 @@ def add_movie(user_id):
         # Validate title
         if not title:
             warning_message = "Title is required."
-            return render_template('add_movie.html', user=user_name, warning_message=warning_message)
+            return render_template('add_movie.html',
+                                   user=user_name, warning_message=warning_message)
 
         try:
             data.add_movie(user_id, title)
         except Exception as e:
             print(f"Error adding movie: {e}")
             error_message = "An error occurred while adding the movie. Please try again."
-            return render_template('add_movie.html', user=user_name, warning_message=error_message)
+            return render_template('add_movie.html',
+                                   user=user_name, warning_message=error_message)
 
         success_message = f"Movie '{title}' added successfully!"
-        return render_template('add_movie.html', user=user_name, success_message=success_message)
+        return render_template('add_movie.html',
+                               user=user_name, success_message=success_message)
 
 
 @app.route('/users/<user_id>/update_movie/<movie_id>', methods=['GET', 'POST'])
