@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Users </title>
+    <title>Users</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body class="users">
@@ -13,25 +13,30 @@
         <a href="/movies"><button>Movies</button></a>
         <a href="/users"><button>Users</button></a>
     </nav>
+
+    <h1 class="users-title">User's</h1>
+
     <ul>
         {% for user in users %}
         <li>
-            <!-- Link to the user's movie list -->
-            <a href="{{ url_for('user_movies', user_id=user.id) }}">{{ user.name }}</a>
+            <!-- Round icon with the first letters of the username -->
+            <div class="user-icon">
+                {{ user.name[0] }} <!-- Display first letter of the username -->
+            </div>
 
-            <!-- Button to add a movie for the user -->
-            <a href="{{ url_for('add_movie', user_id=user.id) }}">
-                <button>Add Movie for {{ user.name }}</button>
-            </a>
+            <div class="user-info">
+                <!-- Display the full username -->
+                <span>{{ user.name }}</span>
+            </div>
 
             <!-- Button to update user information -->
             <a href="{{ url_for('update_user', user_id=user.id) }}">
-                <button>Update {{ user.name }}</button>
+                <button>Update</button>
             </a>
 
             <!-- Button to delete user -->
             <a href="{{ url_for('delete_user', user_id=user.id) }}">
-                <button>Delete {{ user.name }}</button>
+                <button class="remove">Remove</button>
             </a>
         </li>
         {% endfor %}

@@ -64,15 +64,15 @@ nav a button:hover {
 
 /* Content styles */
 .content {
-    text-align: left; /* Align content to the left */
+    text-align: left;
     padding: 100px 40px;
 }
 
 .content h1 {
-    font-size: 6rem; /* 2 times bigger than 3rem */
+    font-size: 6rem;
     margin-bottom: -70px;
     display: flex;
-    justify-content: flex-start; /* Align the text to the left */
+    justify-content: flex-start;
     align-items: center;
 }
 
@@ -99,7 +99,7 @@ nav a button:hover {
     line-height: 0.5;
     padding: 0px 70px;
     position: relative;
-    padding-bottom: 50px; /* Added bottom padding to create more space below */
+    padding-bottom: 50px;
 }
 
 /* Add User Button styles */
@@ -114,7 +114,7 @@ nav a button:hover {
     text-decoration: none;
     border-radius: 25px;
     margin-left: 6cm;
-    margin-top: 50px; /* Adds space between description and button */
+    margin-top: 50px;
 }
 
 .add-user-btn:hover {
@@ -126,7 +126,7 @@ nav a button:hover {
 
     padding: 30px;
     border-radius: 10px;
-    width: 400px; /* Set a fixed width for the form */
+    width: 400px;
     text-align: center;
     color: white;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
@@ -146,7 +146,7 @@ nav a button:hover {
 .styled-form input[type="text"] {
     width: 100%;
     padding: 10px;
-    margin-bottom: 20px; /* Space between input and button */
+    margin-bottom: 20px;
     font-size: 1rem;
     border: 2px solid #ccc;
     border-radius: 5px;
@@ -162,7 +162,7 @@ nav a button:hover {
     border: 2px solid black;
     border-radius: 25px;
     cursor: pointer;
-    width: 100%; /* Make button full width */
+    width: 100%;
     transition: all 0.3s ease;
 }
 
@@ -171,7 +171,7 @@ nav a button:hover {
     color: black;
 }
 
-/* Success and Warning messages will now be below the form */
+/* Success and Warning messages */
 .alert {
     text-align: center;
     margin: 20px auto;
@@ -202,33 +202,33 @@ nav a button:hover {
 
 /* Movie Card Styling */
 .movie-card {
-    width: 200px; /* Increase the card width */
-    height: 450px; /* Increase the card height */
-    padding: 15px; /* Adjust padding for better spacing */
-    border-radius: 10px; /* Slightly larger border radius for a polished look */
+    width: 200px;
+    height: 450px;
+    padding: 15px;
+    border-radius: 10px;
     background-color: white;
     color: black;
-    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2); /* Enhance shadow for better emphasis */
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
-    margin-bottom: 25px; /* Slightly more spacing between rows */
+    margin-bottom: 25px;
     overflow: hidden;
     position: relative;
 }
 
 /* Poster Styling */
 .movie-poster {
-    width: 190px; /* Adjust width to match the new card size */
-    height: 270px; /* Increase height for better scaling */
+    width: 190px;
+    height: 270px;
     border: 8px solid black;
     border-radius: 8px;
 }
 
 .movie-details {
-    width: 100%; /* Ensure the details section spans the full width */
-    flex-grow: 1; /* Push content to fill available space */
+    width: 100%;
+    flex-grow: 1;
     padding: 15px;
     font-color: white;
     background-color: white;
@@ -240,12 +240,12 @@ nav a button:hover {
     color: black;
     font-size: 1.4em;
     font-weight: bold;
-    margin: 6px 0 10px; /* Add space above and below */
+    margin: 6px 0 10px;
     line-height: 1.2em;
-    max-height: 2.4em; /* Limit to two lines */
+    max-height: 2.4em;
     overflow: hidden;
     text-overflow: ellipsis;
-    white-space: nowrap; /* Prevent wrapping */
+    white-space: nowrap;
 }
 
 .movie-year {
@@ -277,4 +277,75 @@ nav a button:hover {
 
 .name {
     text-decoration: underline;
+}
+
+.users-title {
+    text-align:center;
+    color: #333;
+    color: white;
+    text-shadow: 2px 2px 5px black;
+    font-size: 50px;
+    margin: 30px 55% 30px;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    margin: 20px 55% 60px;
+    width: 60%;
+}
+
+li {
+    display: flex;
+    align-items: center;
+    background-color: #fff;
+    margin: 10px 0;
+    padding: 10px 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    width: 60%;
+    justify-content: space-between;
+}
+
+
+.user-icon {
+    width: 40px;
+    height: 40px;
+    background-color: #3498db;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+.user-info {
+    flex-grow: 1;
+    font-size: 1.2em;
+    font-weight: bold;
+    color: black;
+    margin-right: 20px;
+}
+
+button {
+    padding: 5px 10px;
+    margin-left: 10px;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    background-color: #3498db;
+    color: #fff;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #2980b9;
+}
+
+button.remove:hover {
+    background-color: #e74c3c;
 }

@@ -13,6 +13,10 @@
         <a href="/users">Users</a>
         <a href="/movies">Movies</a>
     </nav>
+     <!-- Button to add a movie for the user -->
+            <a href="{{ url_for('add_movie', user_id=user.id) }}">
+                <button>Add Movie for {{ user.name }}</button>
+            </a>
 
     {% if warning_message %}
         <p style="color: red;">{{ warning_message }}</p>
