@@ -38,29 +38,14 @@ class SQLiteDataManager(DataManagerInterface):
         Returns:
             List[Movie]: A list of all movie objects associated with the user.
         """
-        try:
-            # Check if the user exists
-            user = self.get_user(user_id)
-            if not user:
-                raise ValueError(f"User with ID {user_id} does not exist.")
-
-            # Query the movies linked to this user via the UserMovies table
-            movies = (
-                self.db.session.query(Movie)
-                .join(UserMovies, UserMovies.movie_id == Movie.id)
-                .filter(UserMovies.user_id == user_id)
-                .all()
-            )
-
-            if not movies:
-                raise ValueError(f"No movies found for user ID {user_id}.")
-
-            return movies
-        except ValueError as e:
-            raise ValueError(f"Could not retrieve movies for user {user_id}: {e}")
-        except SQLAlchemyError as e:
-            print(f"Error fetching movies for user ID {user_id}: {e}")
-            raise
+        # Query the movies linked to this user via the UserMovies table
+        movies = (
+            self.db.session.query(Movie)
+            .join(UserMovies, UserMovies.movie_id == Movie.id)
+            .filter(UserMovies.user_id == user_id)
+            .all()
+        )
+        return movies
 
     def get_user(self, user_id):
         """

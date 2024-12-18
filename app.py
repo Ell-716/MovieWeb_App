@@ -44,10 +44,20 @@ def movies():
 def user_movies(user_id):
     """Display a list of movies for a specific user."""
     try:
+        # Fetch user details
         user_name = data.get_user(user_id)
         if not user_name:
             return redirect('/404')
+
+        # Fetch user movies
+        movies = data.get_user_movies(user_id)
+        if not movies:
+            return render_template('user_movies.html', user=user_name, movies=None)
+
+        return render_template('user_movies.html', user=user_name, movies=movies)
+
     except sqlalchemy.exc.NoResultFound:
+        print(f"User with ID {user_id} not found.")
         return redirect('/404')
     except sqlalchemy.exc.SQLAlchemyError as e:
         print(f"Database error: {e}")
@@ -55,14 +65,6 @@ def user_movies(user_id):
     except Exception as e:
         print(f"Unexpected error: {e}")
         return redirect('/error')
-
-    try:
-        movies = data.get_user_movies(user_id)
-    except Exception as e:
-        print(f"Error fetching movies for user {user_id}: {e}")
-        movies = []
-
-    return render_template('user_movies.html', user=user_name, movies=movies)
 
 
 @app.route('/add_user', methods=['GET', 'POST'])

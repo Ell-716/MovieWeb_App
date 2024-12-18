@@ -4,43 +4,60 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
     <title>{{ user.name }}'s Movies</title>
 </head>
-<body>
-    <h1>{{ user.name }}'s Movies</h1>
+<body class="user_movies">
     <nav>
-        <a href="/">Home</a>
-        <a href="/users">Users</a>
+        <a href="/"><button>Home</button></a>
         <a href="/movies"><button>Movies</button></a>
+        <a href="/users"><button>Users</button></a>
     </nav>
 
-    {% if message %}
-        <p style="color: green;">{{ message }}</p>
-    {% endif %}
+    <!-- Add Movie Button -->
+    <div class="add-movie-container">
+        <a href="{{ url_for('add_movie', user_id=user.id) }}">
+            <button class="add-movie-button">Add Movie</button>
+        </a>
+    </div>
 
-    <main>
+    <section class="movies-container">
         {% if movies %}
-            <ul>
-                {% for movie in movies %}
-                    <li>
-                        <strong>{{ movie.title }}</strong> ({{ movie.release_year }}) -
-                        Rating: {{ movie.rating }}
-
+            {% for movie in movies %}
+                <div class="movie-card">
+                    <img src="{{ movie.poster }}" class="movie-poster">
+                    <div class="movie-details">
+                        <h3 class="movie-title">{{ movie.title }}</h3>
+                        <p class="movie-year"><strong>Release year:</strong> <span class="year">{{ movie.release_year }}</span></p>
+                        <div class="movie-rating">
+                            <strong>IMBd Rating:</strong>
+                            <svg width="12" height="12" fill="gold" viewBox="0 0 24 24">
+                                <path d="M12 20.1l5.82 3.682c1.066.675 2.37-.322 2.09-1.584l-1.543-6.926
+                                5.146-4.667c.94-.85.435-2.465-.799-2.567l-6.773-.602L13.29.89a1.38 1.38 0 0 0-2.581
+                                0l-2.65 6.53-6.774.602C.052 8.126-.453 9.74.486 10.59l5.147 4.666-1.542 6.926c-.28
+                                1.262 1.023 2.26 2.09 1.585L12 20.099z"></path>
+                            </svg>
+                            <span>{{ movie.rating }}</span>
+                        </div>
+                        <p class="movie-director"><strong>Director:</strong> <span class="name">{{ movie.director }}</span></p>
+                    </div>
+                    <div class="movie-actions">
                         <!-- Update Button -->
-                        <a href="{{ url_for('update_movie', user_id=user.id, movie_id=movie.id) }}">
-                            <button type="button">Update Movie</button>
+                        <a href="{{ url_for('update_movie', user_id=user.id, movie_id=movie.id) }}" class="action-icon">
+                            <img src="{{ url_for('static', filename='pen.png') }}" alt="Update">
                         </a>
-
                         <!-- Delete Button -->
-                        <form action="{{ url_for('delete_movie', user_id=user.id, movie_id=movie.id) }}" method="GET" style="display:inline;">
-                            <button type="submit">Delete Movie</button>
+                        <form action="{{ url_for('delete_movie', user_id=user.id, movie_id=movie.id) }}" method="GET" class="action-icon">
+                            <button type="submit">
+                                <img src="{{ url_for('static', filename='bin.png') }}" alt="Delete">
+                            </button>
                         </form>
-                    </li>
-                {% endfor %}
-            </ul>
+                    </div>
+                </div>
+            {% endfor %}
         {% else %}
-            <p>No movies added for {{ user.name }} yet.</p>
+            <p class="no-movies-message"><strong>No movies added for {{ user.name }} yet.</strong></p>
         {% endif %}
-    </main>
+    </section>
 </body>
 </html>
