@@ -79,23 +79,27 @@ def add_user():
         # Validation: Check if the name is provided
         if not name:
             warning_message = "Name is required."
-            return render_template("add_user.html", warning_message=warning_message)
+            return render_template("add_user.html",
+                                   warning_message=warning_message)
 
         # Validation: Check if the name length is valid
         if len(name) < 2:
             warning_message = "Name must be at least 2 characters long."
-            return render_template("add_user.html", warning_message=warning_message)
+            return render_template("add_user.html",
+                                   warning_message=warning_message)
 
         if len(name) > 50:
             warning_message = "Name cannot exceed 50 characters."
-            return render_template("add_user.html", warning_message=warning_message)
+            return render_template("add_user.html",
+                                   warning_message=warning_message)
 
         try:
             # Check if the user already exists by name
             existing_user = data.get_user_by_name(name)
             if existing_user:
                 warning_message = f"The user '{name}' already exists."
-                return render_template("add_user.html", warning_message=warning_message)
+                return render_template("add_user.html",
+                                       warning_message=warning_message)
 
             # Add the new user
             data.add_user(name)
@@ -103,20 +107,24 @@ def add_user():
             # Catch specific application-level errors
             print(f"Validation error: {ve}")
             warning_message = str(ve)
-            return render_template("add_user.html", warning_message=warning_message)
+            return render_template("add_user.html",
+                                   warning_message=warning_message)
         except SQLAlchemyError as sqle:
             # Handle SQLAlchemy-specific database errors
             print(f"Database error: {sqle}")
             error_message = "A database error occurred. Please try again."
-            return render_template("add_user.html", warning_message=error_message)
+            return render_template("add_user.html",
+                                   warning_message=error_message)
         except Exception as e:
             # Catch any other unforeseen errors
             print(f"Unexpected error: {e}")
             error_message = "An unexpected error occurred. Please try again."
-            return render_template("add_user.html", warning_message=error_message)
+            return render_template("add_user.html",
+                                   warning_message=error_message)
 
         success_message = f"User '{name}' added successfully!"
-        return render_template("add_user.html", success_message=success_message)
+        return render_template("add_user.html",
+                               success_message=success_message)
 
 
 @app.route('/users/<int:user_id>/add_movie', methods=['GET', 'POST'])
@@ -137,7 +145,8 @@ def add_movie(user_id):
         # Validate title
         if not title:
             warning_message = "Title is required."
-            return render_template('add_movie.html', user=user_name, warning_message=warning_message)
+            return render_template('add_movie.html', user=user_name,
+                                   warning_message=warning_message)
 
         try:
             # Attempt to add the movie
@@ -145,68 +154,95 @@ def add_movie(user_id):
 
             if result["status"] == "not_found":
                 warning_message = f"Movie '{title}' not found. Try again."
-                return render_template('add_movie.html', user=user_name, warning_message=warning_message)
+                return render_template('add_movie.html', user=user_name,
+                                       warning_message=warning_message)
 
             if result["status"] == "linked":
                 warning_message = f"Movie '{title}' is already in your list."
-                return render_template('add_movie.html', user=user_name, warning_message=warning_message)
+                return render_template('add_movie.html', user=user_name,
+                                       warning_message=warning_message)
 
             if result["status"] == "added":
                 success_message = f"Movie '{title}' added successfully!"
-                return render_template('add_movie.html', user=user_name, success_message=success_message)
+                return render_template('add_movie.html', user=user_name,
+                                       success_message=success_message)
 
         except sqlalchemy.exc.IntegrityError as e:
             # Handle database constraints, such as unique violations
             print(f"IntegrityError: {e}")
             error_message = "Database constraint violated. Please check your inputs."
-            return render_template('add_movie.html', user=user_name, warning_message=error_message)
+            return render_template('add_movie.html', user=user_name,
+                                   warning_message=error_message)
 
         except sqlalchemy.exc.SQLAlchemyError as e:
             # General SQLAlchemy errors
             print(f"SQLAlchemyError: {e}")
             error_message = "An unexpected database error occurred. Please try again later."
-            return render_template('add_movie.html', user=user_name, warning_message=error_message)
+            return render_template('add_movie.html', user=user_name,
+                                   warning_message=error_message)
 
         except ValueError:
             error_message = "A database error occurred. Please try again later."
-            return render_template('add_movie.html', user=user_name, warning_message=error_message)
+            return render_template('add_movie.html', user=user_name,
+                                   warning_message=error_message)
 
         except Exception as e:
             print(f"Unexpected Error: {e}")
             error_message = "An unexpected error occurred. Please try again."
-            return render_template('add_movie.html', user=user_name, warning_message=error_message)
+            return render_template('add_movie.html', user=user_name,
+                                   warning_message=error_message)
 
 
 @app.route('/users/<user_id>/update_movie/<movie_id>', methods=['GET', 'POST'])
 def update_movie(user_id, movie_id):
     """Update details of a specific movie for a user."""
-    if request.method == "GET":
-        try:
-            movie = data.get_movie(movie_id)
-        except sqlalchemy.exc.NoResultFound:
-            return redirect('/404')
-        return render_template('update_movie.html', movie=movie, user_id=user_id)
+    try:
+        movie = data.get_movie(movie_id)
+    except sqlalchemy.exc.NoResultFound:
+        return redirect('/404')
 
     if request.method == "POST":
-        custom_title = request.form.get('title').strip()
         custom_rating = request.form.get('rating').strip()
 
-        if not custom_title or not custom_rating:
-            warning_message = "Both title and rating are required."
-            return render_template('update_movie.html', movie=data.get_movie(movie_id),
+        # Validate the rating
+        if not custom_rating:
+            warning_message = "Rating is required."
+            return render_template('update_movie.html', movie=movie,
                                    warning_message=warning_message, user_id=user_id)
 
         try:
+            # Check if the rating is a valid float
+            custom_rating = float(custom_rating)
+
+            # Validate if the rating is between 0 and 10
+            if not (0 <= custom_rating <= 10):
+                warning_message = "Rating must be between 0 and 10."
+                return render_template('update_movie.html', movie=movie,
+                                       warning_message=warning_message, user_id=user_id)
+
+        except ValueError:
+            warning_message = "Invalid rating. Please enter a valid number between 0 and 10."
+            return render_template('update_movie.html', movie=movie,
+                                   warning_message=warning_message, user_id=user_id)
+
+        try:
+            # Update movie rating
             data.update_movie(movie_id=movie_id, user_id=user_id, rating=custom_rating)
+        except ValueError as ve:
+            error_message = str(ve)
+            return render_template('update_movie.html', movie=movie,
+                                   warning_message=error_message, user_id=user_id)
         except Exception as e:
             print(f"Error updating movie: {e}")
             error_message = "An error occurred while updating the movie. Please try again."
-            return render_template('update_movie.html', movie=data.get_movie(movie_id),
+            return render_template('update_movie.html', movie=movie,
                                    warning_message=error_message, user_id=user_id)
 
-        success_message = f"Movie '{custom_title}' updated successfully!"
-        return render_template('update_movie.html', movie=data.get_movie(movie_id),
+        success_message = "Rating updated successfully!"
+        return render_template('update_movie.html', movie=movie,
                                success_message=success_message, user_id=user_id)
+
+    return render_template('update_movie.html', movie=movie, user_id=user_id)
 
 
 @app.route('/users/<int:user_id>/delete_movie/<int:movie_id>', methods=['GET'])
@@ -249,7 +285,8 @@ def update_user(user_id):
                 user = data.get_user(user_id)
             except sqlalchemy.exc.NoResultFound:
                 return redirect('/404')
-            return render_template('update_user.html', user=user, user_id=user_id, warning_message=warning_message)
+            return render_template('update_user.html', user=user,
+                                   user_id=user_id, warning_message=warning_message)
 
         try:
             # Update user details
@@ -262,10 +299,12 @@ def update_user(user_id):
                 user = data.get_user(user_id)
             except sqlalchemy.exc.NoResultFound:
                 return redirect('/404')
-            return render_template('update_user.html', user=user, user_id=user_id, warning_message=error_message)
+            return render_template('update_user.html', user=user,
+                                   user_id=user_id, warning_message=error_message)
 
         success_message = f"User '{user_name}' updated successfully!"
-        return render_template('update_user.html', success_message=success_message, user=user, user_id=user_id)
+        return render_template('update_user.html',
+                               success_message=success_message, user=user, user_id=user_id)
 
 
 @app.route('/users/<user_id>/delete_user', methods=['GET'])

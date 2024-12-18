@@ -260,25 +260,17 @@ class SQLiteDataManager(DataManagerInterface):
             movie_id (int): The ID of the movie to update.
             user_id (int): The ID of the user to update.
             rating (float, optional): The new rating of the movie. Defaults to None.
-        Returns:
-            str: A success message if the movie is updated successfully.
         """
-        try:
-            # Check if the movie exists
-            movie_to_update = self.get_movie(movie_id)
-            if not movie_to_update:
-                return f"Movie with ID {movie_id} does not exist."
+        # Check if the movie exists
+        movie_to_update = self.get_movie(movie_id)
+        if not movie_to_update:
+            raise ValueError(f"Movie with ID {movie_id} does not exist.")
 
-            movie_to_update.rating = rating or movie_to_update.rating
+        # Update the rating if provided
+        movie_to_update.rating = rating or movie_to_update.rating
 
-            # Commit the changes
-            self.db.session.commit()
-            return f"Movie '{movie_to_update.title}' was updated successfully!"
-
-        except SQLAlchemyError as e:
-            print(f"Error updating movie with ID {movie_id}: {e}")
-            self.db.session.rollback()
-            raise ValueError(f"Could not update movie with ID {movie_id}. Please try again.")
+        # Commit the changes
+        self.db.session.commit()
 
     def get_all_movies(self):
         """

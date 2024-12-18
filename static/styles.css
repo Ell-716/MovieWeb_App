@@ -46,6 +46,13 @@ body.add_movie {
     margin: 0;
 }
 
+body.update_movie {
+    background: url(background6.jpg) no-repeat center center fixed;
+    background-size: cover;
+    font-family: Arial, sans-serif;
+    margin: 0;
+}
+
 /* Navigation bar styles */
 nav {
     display: flex;
@@ -138,7 +145,7 @@ nav a button:hover {
     color: black;
 }
 /* Form styles */
-.styled-form, .form {
+.styled-form, .form, .update-form {
     padding: 30px;
     border-radius: 10px;
     width: 400px;
@@ -148,12 +155,18 @@ nav a button:hover {
     margin: 200px auto;
 }
 
+.update-form {
+    background-color: #d9b38c;
+}
+
 .form {
     background-color: #3498db;
 }
 
 /* Label styles */
-.styled-form label, .form label {
+.styled-form label,
+.form label,
+.update-form label {
     display: block;
     margin-bottom: 10px;
     font-size: 1.2rem;
@@ -163,7 +176,8 @@ nav a button:hover {
 
 /* Input field styles */
 .styled-form input[type="text"],
-.form input[type="text"] {
+.form input[type="text"],
+.update-form input[type="text"] {
     width: 100%;
     padding: 10px;
     margin-bottom: 20px;
@@ -175,7 +189,8 @@ nav a button:hover {
 
 /* Submit button styles */
 .styled-form input[type="submit"],
-.form input[type="submit"] {
+.form input[type="submit"],
+.update-form input[type="submit"] {
     background-color: black;
     color: white;
     padding: 15px 40px;
@@ -188,7 +203,8 @@ nav a button:hover {
 }
 
 .styled-form input[type="submit"]:hover,
-.form input[type="submit"]:hover {
+.form input[type="submit"]:hover,
+.update-form input[type="submit"]:hover {
     background-color: white;
     color: black;
 }
@@ -201,6 +217,11 @@ nav a button:hover {
     justify-content: center;
 }
 
+@keyframes fadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
 /* Success and Warning messages */
 .alert {
     text-align: center;
@@ -210,16 +231,29 @@ nav a button:hover {
     font-size: 1.5rem;
     font-weight: bold;
     padding-top: 40px;
+    animation: fadeIn 0.5s ease-in-out;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
+    margin-top: 1cm;
 }
 
 /* Success message styling */
 .alert-success {
     color: white;
+
+}
+.update-success {
+    color: #4d2e00;
+    margin-top: 4cm;
 }
 
 /* Warning message styling */
 .alert-warning {
     color: red;
+}
+
+.update-warning {
+    color: red;
+    margin-top: 4cm;
 }
 
 /* Movies Section Styling */
