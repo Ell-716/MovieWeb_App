@@ -14,6 +14,16 @@
         <a href="/users"><button>Users</button></a>
     </nav>
 
+    <div class="message-container">
+        <!-- Success message -->
+        {% if request.args.get('success_message') %}
+            <p class="alert alert-success">{{ request.args.get('success_message') }}</p>
+        {% elif request.args.get('warning_message') %}
+            <!-- Warning message -->
+            <p class="alert alert-warning">{{ request.args.get('warning_message') }}</p>
+        {% endif %}
+    </div>
+
     <h1 class="users-title">User's</h1>
 
     <ul>
@@ -25,8 +35,8 @@
             </div>
 
             <div class="user-info">
-                <!-- Display the full username -->
-                <span>{{ user.name }}</span>
+                <!-- Link to the user's movie list -->
+                <a href="{{ url_for('user_movies', user_id=user.id) }}">{{ user.name }}</a>
             </div>
 
             <!-- Button to update user information -->
@@ -36,7 +46,7 @@
 
             <!-- Button to delete user -->
             <a href="{{ url_for('delete_user', user_id=user.id) }}">
-                <button class="remove">Remove</button>
+                <button class="remove">Delete</button>
             </a>
         </li>
         {% endfor %}

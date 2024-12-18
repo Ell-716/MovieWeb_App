@@ -245,18 +245,26 @@ def update_user(user_id):
 def delete_user(user_id):
     """Delete a user from the system."""
     try:
-        user_to_delete = data.delete_user(user_id)
-        if not user_to_delete:
-            warning_message = f"User with ID {user_id} not found."
-            return redirect(f'/users?message={warning_message}')
+        # Attempt to delete the user and get their name
+        user_name = data.delete_user(user_id)
 
-        success_message = f"User '{user_to_delete}' deleted successfully!"
-        return redirect(f'/users?message={success_message}')
+        if user_name is None:
+            warning_message = f"User with ID {user_id} not found."
+            return redirect(f'/users?warning_message={warning_message}')
+
+        # Redirect with a success message
+        success_message = f"User '{user_name}' deleted successfully!"
+        return redirect(f'/users?success_message={success_message}')
+
+    except ValueError as e:
+        # Redirect with an error message if a problem occurs
+        warning_message = str(e)
+        return redirect(f'/users?warning_message={warning_message}')
 
     except Exception as e:
-        print(f"Error deleting user: {e}")
-        warning_message = "An error occurred while deleting the user. Please try again."
-        return redirect(f'/users?message={warning_message}')
+        print(f"Unexpected error deleting user: {e}")
+        warning_message = "An unexpected error occurred. Please try again."
+        return redirect(f'/users?warning_message={warning_message}')
 
 
 @app.errorhandler(404)

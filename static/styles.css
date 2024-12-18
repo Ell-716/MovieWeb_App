@@ -171,6 +171,14 @@ nav a button:hover {
     color: black;
 }
 
+.message-container {
+    height: 40px; /* Adjust this based on the height of your messages */
+    margin-bottom: 20px; /* Space between the message and the rest of the content */
+    display: flex;
+    align-items: center; /* Vertically center the message */
+    justify-content: center; /* Horizontally center the message */
+}
+
 /* Success and Warning messages */
 .alert {
     text-align: center;

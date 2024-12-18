@@ -14,19 +14,21 @@
         <a href="/users"><button>Users</button></a>
     </nav>
 
-    <!-- Success message -->
-    {% if success_message %}
-      <p class="alert alert-success">{{ success_message }}</p>
-    {% endif %}
+    <div class="message-container">
+      <!-- Success message -->
+      {% if success_message %}
+        <p class="alert alert-success">{{ success_message }}</p>
+      {% endif %}
 
-    <!-- Warning message -->
-    {% if warning_message %}
-      <p class="alert alert-warning">{{ warning_message }}</p>
-    {% endif %}
+      <!-- Warning message -->
+      {% if warning_message %}
+        <p class="alert alert-warning">{{ warning_message }}</p>
+      {% endif %}
+    </div>
 
     <!-- Form for adding an user -->
     <form action="/add_user" method="POST" class="styled-form">
-      <label for="name">Please enter User name</label>
+      <label for="name">Please enter Username</label>
       <input type="text" id="name" name="name" required><br><br>
       <input type="submit" value="Add User">
     </form>

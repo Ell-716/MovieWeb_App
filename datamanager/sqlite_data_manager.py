@@ -98,26 +98,25 @@ class SQLiteDataManager(DataManagerInterface):
         Args:
             user_id (int): The ID of the user to delete.
         Returns:
-            str: A success message if the user is deleted.
+            str: The name of the deleted user, or None if the user does not exist.
         """
         try:
             # Check if the user exists
             user_to_delete = self.get_user(user_id)
             if not user_to_delete:
-                return f"User with ID {user_id} does not exist."
+                return None  # User does not exist
 
             # Delete associated entries in UserMovies
             self.db.session.query(UserMovies).filter(UserMovies.user_id == user_id).delete()
 
             # Delete the user and commit the changes
+            user_name = user_to_delete.name
             self.db.session.delete(user_to_delete)
             self.db.session.commit()
-            return f"User with ID {user_id} and all associated data were deleted successfully!"
-
+            return user_name
         except SQLAlchemyError as e:
-            print(f"Error deleting user with ID {user_id}: {e}")
             self.db.session.rollback()
-            raise ValueError(f"Could not delete user with ID {user_id}. Please try again.")
+            raise ValueError(f"Error occurred while deleting user with ID {user_id}: {e}")
 
     def update_user(self, user_id, user_name):
         """
