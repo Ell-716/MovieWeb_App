@@ -123,6 +123,7 @@ def add_user():
 def add_movie(user_id):
     """Add a new movie to a user's collection."""
     try:
+        # Validate the user exists
         user_name = data.get_user(user_id)
     except sqlalchemy.exc.NoResultFound:
         return redirect('/404')
@@ -136,20 +137,44 @@ def add_movie(user_id):
         # Validate title
         if not title:
             warning_message = "Title is required."
-            return render_template('add_movie.html',
-                                   user=user_name, warning_message=warning_message)
+            return render_template('add_movie.html', user=user_name, warning_message=warning_message)
 
         try:
-            data.add_movie(user_id, title)
-        except Exception as e:
-            print(f"Error adding movie: {e}")
-            error_message = "An error occurred while adding the movie. Please try again."
-            return render_template('add_movie.html',
-                                   user=user_name, warning_message=error_message)
+            # Attempt to add the movie
+            result = data.add_movie(user_id, title)
 
-        success_message = f"Movie '{title}' added successfully!"
-        return render_template('add_movie.html',
-                               user=user_name, success_message=success_message)
+            if result["status"] == "not_found":
+                warning_message = f"Movie '{title}' not found. Try again."
+                return render_template('add_movie.html', user=user_name, warning_message=warning_message)
+
+            if result["status"] == "linked":
+                warning_message = f"Movie '{title}' is already in your list."
+                return render_template('add_movie.html', user=user_name, warning_message=warning_message)
+
+            if result["status"] == "added":
+                success_message = f"Movie '{title}' added successfully!"
+                return render_template('add_movie.html', user=user_name, success_message=success_message)
+
+        except sqlalchemy.exc.IntegrityError as e:
+            # Handle database constraints, such as unique violations
+            print(f"IntegrityError: {e}")
+            error_message = "Database constraint violated. Please check your inputs."
+            return render_template('add_movie.html', user=user_name, warning_message=error_message)
+
+        except sqlalchemy.exc.SQLAlchemyError as e:
+            # General SQLAlchemy errors
+            print(f"SQLAlchemyError: {e}")
+            error_message = "An unexpected database error occurred. Please try again later."
+            return render_template('add_movie.html', user=user_name, warning_message=error_message)
+
+        except ValueError:
+            error_message = "A database error occurred. Please try again later."
+            return render_template('add_movie.html', user=user_name, warning_message=error_message)
+
+        except Exception as e:
+            print(f"Unexpected Error: {e}")
+            error_message = "An unexpected error occurred. Please try again."
+            return render_template('add_movie.html', user=user_name, warning_message=error_message)
 
 
 @app.route('/users/<user_id>/update_movie/<movie_id>', methods=['GET', 'POST'])

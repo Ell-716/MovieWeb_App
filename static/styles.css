@@ -39,6 +39,13 @@ body.user_movies {
     margin: 0;
 }
 
+body.add_movie {
+    background: url(background5.jpg) no-repeat center center fixed;
+    background-size: cover;
+    font-family: Arial, sans-serif;
+    margin: 0;
+}
+
 /* Navigation bar styles */
 nav {
     display: flex;
@@ -81,19 +88,21 @@ nav a button:hover {
     display: flex;
     justify-content: flex-start;
     align-items: center;
+    padding-left: 25px;
 }
 
-.content h1 .filled {
+.content h1 .filled, .user_title h1 .filled {
     color: white;
     font-weight: bold;
     text-shadow: 2px 2px 5px black;
 }
 
-.content h1 .outlined {
+.content h1 .outlined, .user_title h1 .outlined {
     color: transparent;
     font-weight: bold;
     -webkit-text-stroke: 2px white; /* Outline effect */
     text-stroke: 2px white;
+    margin-left: 20px;
 }
 
 /* Description styles */
@@ -129,8 +138,7 @@ nav a button:hover {
     color: black;
 }
 /* Form styles */
-.styled-form {
-
+.styled-form, .form {
     padding: 30px;
     border-radius: 10px;
     width: 400px;
@@ -140,8 +148,12 @@ nav a button:hover {
     margin: 200px auto;
 }
 
+.form {
+    background-color: #3498db;
+}
+
 /* Label styles */
-.styled-form label {
+.styled-form label, .form label {
     display: block;
     margin-bottom: 10px;
     font-size: 1.2rem;
@@ -150,7 +162,8 @@ nav a button:hover {
 }
 
 /* Input field styles */
-.styled-form input[type="text"] {
+.styled-form input[type="text"],
+.form input[type="text"] {
     width: 100%;
     padding: 10px;
     margin-bottom: 20px;
@@ -161,7 +174,8 @@ nav a button:hover {
 }
 
 /* Submit button styles */
-.styled-form input[type="submit"] {
+.styled-form input[type="submit"],
+.form input[type="submit"] {
     background-color: black;
     color: white;
     padding: 15px 40px;
@@ -173,17 +187,18 @@ nav a button:hover {
     transition: all 0.3s ease;
 }
 
-.styled-form input[type="submit"]:hover {
+.styled-form input[type="submit"]:hover,
+.form input[type="submit"]:hover {
     background-color: white;
     color: black;
 }
 
 .message-container {
-    height: 40px; /* Adjust this based on the height of your messages */
-    margin-bottom: 20px; /* Space between the message and the rest of the content */
+    height: 40px;
+    margin-bottom: 20px;
     display: flex;
-    align-items: center; /* Vertically center the message */
-    justify-content: center; /* Horizontally center the message */
+    align-items: center;
+    justify-content: center;
 }
 
 /* Success and Warning messages */
@@ -192,8 +207,9 @@ nav a button:hover {
     margin: 20px auto;
     width: 80%;
     max-width: 600px;
-    font-size: 1.2rem;
+    font-size: 1.5rem;
     font-weight: bold;
+    padding-top: 40px;
 }
 
 /* Success message styling */
@@ -416,4 +432,13 @@ button.remove:hover {
     text-align: center;
     color: white;
     margin-top: 20px;
+}
+
+.user_title h1 {
+    font-size: 3rem;
+    margin-bottom: -70px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    padding-left: 100px;
 }
