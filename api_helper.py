@@ -6,6 +6,7 @@ from requests.exceptions import HTTPError, ConnectionError, Timeout
 load_dotenv()
 API_KEY = os.getenv("API_KEY")
 
+
 def fetch_movie_data(title):
     api_url = f"http://www.omdbapi.com/?apikey={API_KEY}&t={title}"
 

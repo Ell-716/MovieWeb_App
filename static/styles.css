@@ -53,6 +53,13 @@ body.update_movie {
     margin: 0;
 }
 
+body.update_user {
+    background: url(background7.jpg) no-repeat center center fixed;
+    background-size: cover;
+    font-family: Arial, sans-serif;
+    margin: 0;
+}
+
 /* Navigation bar styles */
 nav {
     display: flex;
@@ -460,7 +467,8 @@ button.remove:hover {
     background-color: #2980b9;
 }
 
-.no-movies-message {
+.no-movies-message,
+.no-movies {
     font-size: 24px;
     font-weight: bold;
     text-align: center;

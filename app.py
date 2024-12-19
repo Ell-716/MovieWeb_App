@@ -15,8 +15,8 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 data = SQLiteDataManager(app)
 
 # run once to create tables
-# with app.app_context():
-    # data.db.create_all()
+with app.app_context():
+    data.db.create_all()
 
 
 @app.route('/', methods=['GET'])
@@ -264,7 +264,7 @@ def delete_movie(user_id, movie_id):
         return redirect(f'/users/{user_id}?message={warning_message}')
 
 
-@app.route('/users/<user_id>/update_user', methods=['GET', 'POST'])
+@app.route('/users/<int:user_id>/update_user', methods=['GET', 'POST'])
 def update_user(user_id):
     """Update a user's details."""
     if request.method == "GET":
@@ -278,10 +278,28 @@ def update_user(user_id):
     if request.method == "POST":
         user_name = request.form.get("name").strip()
 
+        # Validate username length
         if not user_name:
             warning_message = "Username can't be empty."
             try:
-                # Fetch user again to display current details
+                user = data.get_user(user_id)
+            except sqlalchemy.exc.NoResultFound:
+                return redirect('/404')
+            return render_template('update_user.html', user=user,
+                                   user_id=user_id, warning_message=warning_message)
+
+        if len(user_name) < 2:
+            warning_message = "Name must be at least 2 characters long."
+            try:
+                user = data.get_user(user_id)
+            except sqlalchemy.exc.NoResultFound:
+                return redirect('/404')
+            return render_template('update_user.html', user=user,
+                                   user_id=user_id, warning_message=warning_message)
+
+        if len(user_name) > 50:
+            warning_message = "Name cannot exceed 50 characters."
+            try:
                 user = data.get_user(user_id)
             except sqlalchemy.exc.NoResultFound:
                 return redirect('/404')

@@ -5,28 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Update User</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
-<body>
-    <h1>Update User</h1>
+<body class="update_user">
     <nav>
-        <a href="/">Home</a>
-        <a href="/users">Users</a>
+        <a href="/"><button>Home</button></a>
         <a href="/movies"><button>Movies</button></a>
+        <a href="/users"><button>Users</button></a>
     </nav>
 
-    <!-- Success message -->
-    {% if success_message %}
-        <p>{{ success_message }}</p>
-    {% endif %}
+    <div class="message-container">
+        <!-- Success message -->
+        {% if success_message %}
+            <p class="alert alert-success">{{ success_message }}</p>
+        {% endif %}
 
-    <!-- Warning message -->
-    {% if warning_message %}
-        <p>{{ warning_message }}</p>
-    {% endif %}
+        <!-- Warning message -->
+        {% if warning_message %}
+            <p class="alert alert-warning">{{ warning_message }}</p>
+        {% endif %}
+    </div>
 
     <!-- Form for updating a user -->
-    <form action="" method="POST">
-        <label for="name">Name:</label>
+    <form action="" method="POST" class="styled-form">
+        <label for="name">Update Username</label>
         <input type="text" id="name" name="name" value="{{ user.name or '' }}">
         <input type="submit" value="Update User">
     </form>
