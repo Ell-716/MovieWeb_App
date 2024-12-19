@@ -1,3 +1,4 @@
+import logging
 from datamanager.data_models import db, User, Movie, UserMovies
 from datamanager.data_manager import DataManagerInterface
 from sqlalchemy.exc import SQLAlchemyError
@@ -15,7 +16,7 @@ class SQLiteDataManager(DataManagerInterface):
         Args:
             app: The Flask application instance.
         """
-        db.init_app(app)  # Initialize SQLAlchemy with Flask app
+        db.init_app(app)
         self.db = db
 
     def get_all_users(self):
@@ -27,7 +28,7 @@ class SQLiteDataManager(DataManagerInterface):
         try:
             return self.db.session.query(User).all()
         except SQLAlchemyError as e:
-            print(f"Error fetching all users: {e}")
+            logging.error(f"Error fetching all users: {e}")
             return []
 
     def get_user_movies(self, user_id):
@@ -61,7 +62,7 @@ class SQLiteDataManager(DataManagerInterface):
                 raise ValueError(f"No user found with ID {user_id}")
             return user
         except SQLAlchemyError as e:
-            print(f"Error fetching user with ID {user_id}: {e}")
+            logging.error(f"Error fetching user with ID {user_id}: {e}")
             raise  # Re-raise the original exception
 
     def add_user(self, user_name):
@@ -119,6 +120,7 @@ class SQLiteDataManager(DataManagerInterface):
 
         except SQLAlchemyError as e:
             self.db.session.rollback()
+            logging.error(f"Error occurred while deleting user with ID {user_id}: {e}")
             raise ValueError(f"Error occurred while deleting user with ID {user_id}: {e}")
 
     def update_user(self, user_id, user_name):
@@ -142,7 +144,7 @@ class SQLiteDataManager(DataManagerInterface):
             return f"User '{user_name}' was updated successfully!"
 
         except SQLAlchemyError as e:
-            print(f"Error updating user with ID {user_id}: {e}")
+            logging.error(f"Error updating user with ID {user_id}: {e}")
             self.db.session.rollback()
             raise ValueError(f"Could not update user with ID {user_id}. Please try again.")
 
@@ -162,7 +164,7 @@ class SQLiteDataManager(DataManagerInterface):
             return movie
 
         except SQLAlchemyError as e:
-            print(f"Error fetching movie with ID {movie_id}: {e}")
+            logging.error(f"Error fetching movie with ID {movie_id}: {e}")
             raise  # Re-raise the original exception
 
     def add_movie(self, user_id, title, release_year=None, director=None, rating=None, poster=None):
@@ -244,7 +246,8 @@ class SQLiteDataManager(DataManagerInterface):
         """
         try:
             # Find the UserMovies entry linking the user and the movie
-            user_movie = self.db.session.query(UserMovies).filter_by(user_id=user_id, movie_id=movie_id).first()
+            user_movie = self.db.session.query(UserMovies).filter_by(user_id=user_id,
+                                                                     movie_id=movie_id).first()
 
             if not user_movie:
                 return None  # Return None if the relationship does not exist
@@ -268,7 +271,7 @@ class SQLiteDataManager(DataManagerInterface):
             return movie  # Return the movie object after successful deletion
 
         except SQLAlchemyError as e:
-            print(f"Error deleting movie for user {user_id}: {e}")
+            logging.error(f"Error deleting movie for user {user_id}: {e}")
             self.db.session.rollback()
             return None  # Return None in case of an error
 
@@ -300,7 +303,7 @@ class SQLiteDataManager(DataManagerInterface):
         try:
             return self.db.session.query(Movie).all()
         except SQLAlchemyError as e:
-            print(f"Error fetching all movies: {e}")
+            logging.error(f"Error fetching all movies: {e}")
             return []
 
     def get_user_by_name(self, user_name):
@@ -315,5 +318,5 @@ class SQLiteDataManager(DataManagerInterface):
             user = self.db.session.query(User).filter(User.name == user_name).one_or_none()
             return user
         except SQLAlchemyError as e:
-            print(f"Error fetching user with name '{user_name}': {e}")
+            logging.error(f"Error fetching user with name '{user_name}': {e}")
             raise  # Re-raise the original exception
