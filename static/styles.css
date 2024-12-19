@@ -61,7 +61,7 @@ body.update_user {
 }
 
 body.error {
-    background: url(error2.jpg) no-repeat center center fixed;
+    background: url(error.jpg) no-repeat center center fixed;
     background-size: cover;
     font-family: Arial, sans-serif;
     margin: 0;

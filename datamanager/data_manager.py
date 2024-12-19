@@ -63,21 +63,27 @@ class DataManagerInterface(ABC):
         pass
 
     @abstractmethod
-    def add_movie(self, movie: Movie) -> None:
+    def add_movie(self, user_id, title, release_year=None, director=None, rating=None, poster=None):
         """
         Add a new movie to the database.
         Args:
-            movie (Movie): The movie object to add.
+            user_id (int): The unique identifier of the user.
+            title (str): The title of the movie.
+            release_year (str, optional): The release year of the movie.
+            director (str, optional): The director of the movie.
+            rating (float, optional): The rating of the movie.
+            poster (str, optional): The URL of the movie poster.
         Returns:
             None
         """
         pass
 
     @abstractmethod
-    def delete_movie(self, movie_id: int) -> None:
+    def delete_movie(self, user_id, movie_id: int) -> None:
         """
         Remove a movie from the database.
         Args:
+            user_id (int): The unique identifier of the user.
             movie_id (int): The unique identifier of the movie to delete.
         Returns:
             None

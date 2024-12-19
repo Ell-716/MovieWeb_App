@@ -1,7 +1,7 @@
 import os
 import sqlalchemy
 from sqlalchemy.exc import SQLAlchemyError
-from flask import Flask, request, render_template, redirect
+from flask import Flask, request, render_template, redirect, abort
 from datamanager.sqlite_data_manager import SQLiteDataManager
 
 app = Flask(__name__)
@@ -15,8 +15,8 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 data = SQLiteDataManager(app)
 
 # run once to create tables
-with app.app_context():
-    data.db.create_all()
+# with app.app_context():
+    # data.db.create_all()
 
 
 @app.route('/', methods=['GET'])
@@ -47,7 +47,7 @@ def user_movies(user_id):
         # Fetch user details
         user_name = data.get_user(user_id)
         if not user_name:
-            return redirect('/404')
+            abort(404)
 
         # Fetch user movies
         movies = data.get_user_movies(user_id)
@@ -58,13 +58,13 @@ def user_movies(user_id):
 
     except sqlalchemy.exc.NoResultFound:
         print(f"User with ID {user_id} not found.")
-        return redirect('/404')
+        abort(404)
     except sqlalchemy.exc.SQLAlchemyError as e:
         print(f"Database error: {e}")
-        return redirect('/error')
+        abort(404)
     except Exception as e:
         print(f"Unexpected error: {e}")
-        return redirect('/error')
+        abort(404)
 
 
 @app.route('/add_user', methods=['GET', 'POST'])
@@ -134,7 +134,7 @@ def add_movie(user_id):
         # Validate the user exists
         user_name = data.get_user(user_id)
     except sqlalchemy.exc.NoResultFound:
-        return redirect('/404')
+        abort(404)
 
     if request.method == "GET":
         return render_template('add_movie.html', user=user_name)
@@ -199,7 +199,7 @@ def update_movie(user_id, movie_id):
     try:
         movie = data.get_movie(movie_id)
     except sqlalchemy.exc.NoResultFound:
-        return redirect('/404')
+        abort(404)
 
     if request.method == "POST":
         custom_rating = request.form.get('rating').strip()
@@ -272,7 +272,7 @@ def update_user(user_id):
             # Fetch user details
             user = data.get_user(user_id)
         except sqlalchemy.exc.NoResultFound:
-            return redirect('/404')  # Handle case where user is not found
+            abort(404)
         return render_template('update_user.html', user=user, user_id=user_id)
 
     if request.method == "POST":
@@ -284,7 +284,7 @@ def update_user(user_id):
             try:
                 user = data.get_user(user_id)
             except sqlalchemy.exc.NoResultFound:
-                return redirect('/404')
+                abort(404)
             return render_template('update_user.html', user=user,
                                    user_id=user_id, warning_message=warning_message)
 
@@ -293,7 +293,7 @@ def update_user(user_id):
             try:
                 user = data.get_user(user_id)
             except sqlalchemy.exc.NoResultFound:
-                return redirect('/404')
+                abort(404)
             return render_template('update_user.html', user=user,
                                    user_id=user_id, warning_message=warning_message)
 
@@ -302,7 +302,7 @@ def update_user(user_id):
             try:
                 user = data.get_user(user_id)
             except sqlalchemy.exc.NoResultFound:
-                return redirect('/404')
+                abort(404)
             return render_template('update_user.html', user=user,
                                    user_id=user_id, warning_message=warning_message)
 
@@ -316,7 +316,7 @@ def update_user(user_id):
             try:
                 user = data.get_user(user_id)
             except sqlalchemy.exc.NoResultFound:
-                return redirect('/404')
+                abort(404)
             return render_template('update_user.html', user=user,
                                    user_id=user_id, warning_message=error_message)
 
@@ -355,12 +355,6 @@ def delete_user(user_id):
 def handle_404_error(e):
     """Handle 404 errors globally and display the error description."""
     return render_template('404.html'), 404
-
-
-@app.errorhandler(500)
-def handle_500_error(e):
-    """Handle 500 errors globally and display the error description."""
-    return render_template('error.html'), 500
 
 
 if __name__ == '__main__':
