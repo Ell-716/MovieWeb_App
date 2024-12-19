@@ -4,9 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>404 - Page Not Found</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
-<body>
-    <h1>Oops! Page Not Found.</h1>
+<body class="error">
+    <nav>
+        <a href="/"><button>Home</button></a>
+        <a href="/movies"><button>Movies</button></a>
+        <a href="/users"><button>Users</button></a>
+    </nav>
+
+    <div class="error-message">
+        <h1>404</h1>
+        <h2>Page Not Found</h2>
+    </div>
+
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
             <ul>
