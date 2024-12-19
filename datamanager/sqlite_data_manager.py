@@ -82,18 +82,15 @@ class SQLiteDataManager(DataManagerInterface):
         """
         Delete a user and their associated entries from the database.
         If a movie is not linked to any other users, it is also deleted.
-
         Args:
             user_id (int): The ID of the user to delete.
-
         Returns:
             str: The name of the deleted user, or None if the user does not exist.
         """
         try:
-            # Check if the user exists
             user_to_delete = self.get_user(user_id)
             if not user_to_delete:
-                return None  # User does not exist
+                return None
 
             # Get all movie IDs associated with the user
             user_movies = self.db.session.query(UserMovies).filter_by(user_id=user_id).all()
@@ -107,13 +104,11 @@ class SQLiteDataManager(DataManagerInterface):
             self.db.session.delete(user_to_delete)
             self.db.session.commit()
 
-            # Check if any of the movies are orphaned (not linked to other users)
             for movie_id in movie_ids:
                 other_links = self.db.session.query(UserMovies).filter_by(movie_id=movie_id).first()
-                if not other_links:  # If no other user is linked to the movie
+                if not other_links:
                     self.db.session.query(Movie).filter_by(id=movie_id).delete()
 
-            # Commit the final cleanup
             self.db.session.commit()
 
             return user_name
@@ -133,7 +128,6 @@ class SQLiteDataManager(DataManagerInterface):
             str: A success message if the user is updated.
         """
         try:
-            # Check if the user exists
             user_to_update = self.get_user(user_id)
             if not user_to_update:
                 return f"User with ID {user_id} does not exist."
@@ -216,7 +210,7 @@ class SQLiteDataManager(DataManagerInterface):
             )
             self.db.session.add(new_movie)
             self.db.session.commit()
-            existing_movie = new_movie  # Now the movie exists
+            existing_movie = new_movie
 
         # Check if the movie is already linked to the user
         user_movie = (
@@ -250,13 +244,13 @@ class SQLiteDataManager(DataManagerInterface):
                                                                      movie_id=movie_id).first()
 
             if not user_movie:
-                return None  # Return None if the relationship does not exist
+                return None
 
             # Fetch the movie object from the Movie table
             movie = self.db.session.query(Movie).filter_by(id=movie_id).first()
 
             if not movie:
-                return None  # Return None if no movie exists with the given ID
+                return None
 
             # Delete the relationship between the user and the movie
             self.db.session.delete(user_movie)
@@ -265,15 +259,14 @@ class SQLiteDataManager(DataManagerInterface):
             if not self.db.session.query(UserMovies).filter_by(movie_id=movie_id).first():
                 self.db.session.delete(movie)
 
-            # Commit the changes
             self.db.session.commit()
 
-            return movie  # Return the movie object after successful deletion
+            return movie
 
         except SQLAlchemyError as e:
             logging.error(f"Error deleting movie for user {user_id}: {e}")
             self.db.session.rollback()
-            return None  # Return None in case of an error
+            return None
 
     def update_movie(self, movie_id, user_id, rating=None):
         """
@@ -283,7 +276,7 @@ class SQLiteDataManager(DataManagerInterface):
             user_id (int): The ID of the user to update.
             rating (float, optional): The new rating of the movie. Defaults to None.
         """
-        # Check if the movie exists
+
         movie_to_update = self.get_movie(movie_id)
         if not movie_to_update:
             raise ValueError(f"Movie with ID {movie_id} does not exist.")
@@ -291,7 +284,6 @@ class SQLiteDataManager(DataManagerInterface):
         # Update the rating if provided
         movie_to_update.rating = rating or movie_to_update.rating
 
-        # Commit the changes
         self.db.session.commit()
 
     def get_all_movies(self):

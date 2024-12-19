@@ -32,14 +32,14 @@ logging.basicConfig(
 
 @app.route('/', methods=['GET'])
 def home():
-    """Render the home page."""
+    """Render the home page of the application."""
     logging.info("Home page accessed")
     return render_template('home.html')
 
 
 @app.route('/users', methods=['GET'])
 def list_users():
-    """Display a list of all users."""
+    """Display a list of all users registered in the system."""
     try:
         # Log when the route is accessed
         logging.info("Accessing the users list page")
@@ -54,7 +54,7 @@ def list_users():
 
 @app.route('/movies', methods=['GET'])
 def movies():
-    """Display a list of all movies."""
+    """Display a list of all available movies in the system."""
     try:
         logging.info("Accessing the movies list page")
 
@@ -71,7 +71,7 @@ def movies():
 
 @app.route('/users/<user_id>', methods=['GET'])
 def user_movies(user_id):
-    """Display a list of movies for a specific user."""
+    """Display a list of movies for a specific user, identified by user_id."""
     try:
         logging.info(f"Accessing movies for user with ID {user_id}")
 
@@ -106,7 +106,7 @@ def user_movies(user_id):
 
 @app.route('/add_user', methods=['GET', 'POST'])
 def add_user():
-    """Add a new user to the system."""
+    """Add a new user to the system by submitting a form with their name."""
     if request.method == "GET":
         # Log when the GET request is received
         logging.info("Accessing the 'Add User' page (GET request)")
@@ -174,7 +174,7 @@ def add_user():
 
 @app.route('/users/<int:user_id>/add_movie', methods=['GET', 'POST'])
 def add_movie(user_id):
-    """Add a new movie to a user's collection."""
+    """Add a new movie to a specific user's collection, identified by user_id."""
     try:
         # Log when trying to fetch user by ID
         logging.info(f"Fetching user with ID {user_id}.")
@@ -252,7 +252,7 @@ def add_movie(user_id):
 
 @app.route('/users/<user_id>/update_movie/<movie_id>', methods=['GET', 'POST'])
 def update_movie(user_id, movie_id):
-    """Update details of a specific movie for a user."""
+    """Update rating of a specific movie for a user."""
     try:
         # Log movie retrieval attempt
         logging.info(f"Fetching movie with ID {movie_id} for user {user_id}.")
@@ -342,7 +342,7 @@ def delete_movie(user_id, movie_id):
 
 @app.route('/users/<int:user_id>/update_user', methods=['GET', 'POST'])
 def update_user(user_id):
-    """Update a user's details."""
+    """Update a username."""
     if request.method == "GET":
         try:
             # Fetch user details

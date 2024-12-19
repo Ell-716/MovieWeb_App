@@ -6,6 +6,16 @@ db = SQLAlchemy()
 class User(db.Model):
     """
     Represents a user in the application.
+
+    This class defines a user with attributes like `id` and `name`. It also establishes
+    a relationship to the `UserMovies` model, which tracks the many-to-many relationship
+    between users and their favorite movies.
+
+    Attributes:
+        id (int): The unique identifier for the user.
+        name (str): The name of the user.
+        user_movies (relationship): A relationship to the `UserMovies` table for tracking
+                                    which movies the user has.
     """
     __tablename__ = 'users'
 
@@ -25,6 +35,20 @@ class User(db.Model):
 class Movie(db.Model):
     """
     Represents a movie in the application.
+
+    This class defines a movie with attributes like `id`, `title`, `release_year`, `poster`,
+    `director`, and `rating`. It also establishes a relationship to the `UserMovies` model,
+    which tracks the many-to-many relationship between movies and users.
+
+    Attributes:
+        id (int): The unique identifier for the movie.
+        title (str): The title of the movie.
+        release_year (int): The release year of the movie.
+        poster (str): A URL to the movie's poster image.
+        director (str): The director of the movie.
+        rating (float): The IMDb rating of the movie.
+        user_movies (relationship): A relationship to the `UserMovies` table for tracking
+                                     which users have this movie in their collection.
     """
     __tablename__ = 'movies'
 
@@ -49,6 +73,16 @@ class Movie(db.Model):
 class UserMovies(db.Model):
     """
     Represents the many-to-many relationship between users and movies.
+
+    This class acts as a junction table to represent the relationship between users and movies.
+    It links a user to a movie and includes foreign keys to both the `users` and `movies` tables.
+
+    Attributes:
+        id (int): The unique identifier for the record.
+        user_id (int): The ID of the user from the `users` table.
+        movie_id (int): The ID of the movie from the `movies` table.
+        user (relationship): A relationship to the `User` model.
+        movie (relationship): A relationship to the `Movie` model.
     """
     __tablename__ = 'user_movies'
 
@@ -61,4 +95,4 @@ class UserMovies(db.Model):
     movie = db.relationship('Movie', back_populates='user_movies')
 
     def __repr__(self):
-        return f"UserMovies(id = {self.id}, user_id = {self.user_id}, movie_id = {self.movie_id}"
+        return f"UserMovies(id = {self.id}, user_id = {self.user_id}, movie_id = {self.movie_id})"
