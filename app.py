@@ -1,6 +1,7 @@
 import logging
 import os
 import sqlalchemy
+from logging.handlers import RotatingFileHandler
 from sqlalchemy.exc import SQLAlchemyError, NoResultFound
 from flask import Flask, request, render_template, redirect, abort
 from datamanager.sqlite_data_manager import SQLiteDataManager
@@ -19,12 +20,11 @@ data = SQLiteDataManager(app)
 # with app.app_context():
     # data.db.create_all()
 
-# Configure logging
 logging.basicConfig(
     level=logging.DEBUG,
     format='%(asctime)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler('app.log'),
+        RotatingFileHandler('app.log', maxBytes=10**6, backupCount=3),
         logging.StreamHandler()
     ]
 )
